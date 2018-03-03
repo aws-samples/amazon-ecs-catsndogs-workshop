@@ -46,14 +46,14 @@ Because you have already deployed tasks and services to your cluster using Cloud
 
     g.	In Advanced, enter the following in Parameter Overrides. Replace the accountid and region with your AWS account ID and region:
 
-      `
-      { "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "<accountid>.dkr.ecr.<region>.amazonaws.com"}
-      `
+      ```javascript
+        { "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "<accountid>.dkr.ecr.<region>.amazonaws.com"}
+      ```
 
       For example:
-      `{ "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "123456789011.dkr.ecr.ap-southeast-2.amazonaws.com"}
-      `
-
+      ```javascript
+        { "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "123456789011.dkr.ecr.ap-southeast-2.amazonaws.com"}
+      ```
 The parameter override updates the CloudFormation *DogTag* parameter with the Docker image tag created during the build process. *DogTag* will be replaced with the tag associated with the new image created by the Build state, and *ImageRepo* will be replaced with the URL of your repository.  More information about parameter overrides can be found in the CodePipeline documentation: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-parameter-override-functions.html
 
 
