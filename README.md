@@ -37,7 +37,7 @@ In Stack name, enter **catsndogssetup**. Later labs will reference this stack by
 | [Machine Learning containers and placement constraints](Lab-5-Artifacts/) |
 | [Automated Deployments](Lab-6-Artifacts/) |
 | [Advanced Deployment Techniques](Lab-7-Artifacts/) |
-| [Clean up](#) |
+| [Clean up](Lab-99-Artifacts) |
 
 ## Participation
 
