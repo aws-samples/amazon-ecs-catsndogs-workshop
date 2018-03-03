@@ -11,8 +11,10 @@ Once the services and Auto Scaling are set up, you will launch a load generator 
 2.	Find the load balancer with **catsn-catsn** in the name. Copy the DNS name into your browser and validate that the site works.
 
 3.	In the ECS Console, select the cats service and enable Task Auto Scaling. Set the minimum number of tasks to 2 and the maximum of 100. Select the role with **ECSAutoScaleRole** in it's name.
-a. Create a policy called ScaleUp. Use the alarm with "CatsScaleUp" in the name. Add steps to the scaling policy. The first step should add 10 tasks when the load is between 1000 and 2000. The second should add 20 tasks when the load is between 2000 and 4000. The third should add 25 tasks when the load is over 4000.
-b. Create a policy called ScaleDown. Use the alarm with "CatsScaleDown" in the name. Add steps to the scaling policy. The first step should remove 10 tasks when the load is between 1000 and 100. The second should remove 5 tasks when the load is under 100.
+
+    a. Create a policy called ScaleUp. Use the alarm with "CatsScaleUp" in the name. Add steps to the scaling policy. The first step should add 10 tasks when the load is between 1000 and 2000. The second should add 20 tasks when the load is between 2000 and 4000. The third should add 25 tasks when the load is over 4000.
+
+    b. Create a policy called ScaleDown. Use the alarm with "CatsScaleDown" in the name. Add steps to the scaling policy. The first step should remove 10 tasks when the load is between 1000 and 100. The second should remove 5 tasks when the load is under 100.
 
 4.	Repeat step 3 for the dogs service.
 

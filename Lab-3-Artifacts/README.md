@@ -8,12 +8,18 @@ In this lab, you will configure Parameter Store and deploy a new version of the 
 1.	In Systems Manager Parameter Store (located in the EC2 console), create a new secure string. Name the secure string **UnicornLocation** and use the default KMS key. Enter a value of **catsndogs-assets.s3.amazonaws.com**
 
 2.	In the ECS Task Definition create a new revision of the cats task:
-a.	Use the Task Role that start with catsndogssetup
-b.	Change the revision of the cats container from :v1 to :v2
-c.	Add environment variables of:
-key: **PARAMETER_STORE_NAME** with value: **UnicornLocation**
-key: **REGION** with value: **<your_AWS_region>** *for example: us-west-2*
-key: **Tag** with value: **v2**
+
+    a.	Use the Task Role that start with catsndogssetup
+
+    b.	Change the revision of the cats container from :v1 to :v2
+
+    c.	Add environment variables of:
+
+      key: **PARAMETER_STORE_NAME** with value: **UnicornLocation**
+
+      key: **REGION** with value: **<your_AWS_region>** *for example: us-west-2*
+
+      key: **Tag** with value: **v2**
 
 3.	Update the cats service to use the new revision of the cats task definition. Change the Minimum healthy percent to 50 and the Maximum healthy percent to 100. This instructs ECS to deploy the new revision without increasing the total number of running containers for the cats service.
 

@@ -7,10 +7,11 @@ After completing this lab, you will understand how to use ECS placement constrai
 
 ### High-level Instructions
 1.	Create a new task definition for MXNet. Add a container that uses the MXNet image from the catsndogs central ECR repository **205094881157.dkr.ecr.us-west-2.amazonaws.com/mxnet:latest** and set the container memory limit to 2048Mb.
-a.	In the task definition, add a constraint that forces the MXNet tasks to run on a specific EC2 instance type. Pick an instance type and size that is currently running in your cluster. If the cluster contained a c4.large the expression would be:
-`
-attribute:ecs.instance-type == c4.large
-`
+    a.	In the task definition, add a constraint that forces the MXNet tasks to run on a specific EC2 instance type. Pick an instance type and size that is currently running in your cluster. If the cluster contained a c4.large the expression would be:
+
+      `
+      attribute:ecs.instance-type == c4.large
+      `
 
 2.	Create a new ECS service. Use the MXNet task, and run two copies of the task. Use the Task Placement **Placement templates** to create a custom placement strategy. This should first spread the tasks across Availability Zones, then spreads tasks across Instance Types, and finally BinPack tasks using Memory.
 Do not use any load balancing.
@@ -25,9 +26,10 @@ aws ecs put-attributes --cluster catsndogsECScluster --attributes "name=catslike
 `
 
 5.	Create a new revision of the cats task definition to include a new custom constraint that uses the custom attribute:
-`
-attribute:catslike == catnip
-`
+
+      `
+      attribute:catslike == catnip
+      `
 
 6.	Update the cats service to use the new task definition.
 
