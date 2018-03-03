@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to catsndogs.lol Cats - V2.0!</title>
+<meta http-equiv="refresh" content="2">
+<script type="text/javascript" src="app.js"></script>
+<style>
+    body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-weight: 600;
+            font-size: 20pt;
+            text-transform: uppercase;
+            text-align: center;
+            background: #5555FF;
+            color: white;
+    }
+</style>
+<script type="text/javascript">
+        function random_image(min=1, max=10){
+        	var index = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            if (secret !== '' && random100(10)) {
+                max = 5;
+                index = Math.floor(Math.random() * (max - min + 1)) + min;
+                index = secret + '/' + index.toString();
+            }
+  			document.write("<img src='"+index+".jpg' />");
+
+        }
+
+        function random100(percentage) {
+            return Math.floor(Math.random() * 100) +1 <= percentage;
+        }
+
+</script>
+
+</head>
+<body>
+<h1>catsndogs.lol New Improved v2.0 Cats Page!</h1>
+
+<script type="text/javascript">
+     random_image();
+</script>
+
+<script type="text/javascript">
+    if (taskId !== '') {
+        document.write("<p>ECS Task ID: <strong>" + taskId + "</strong></p>");
+    }
+</script>
+
+</body>
+</html>

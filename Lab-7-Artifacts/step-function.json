@@ -1,0 +1,138 @@
+{
+  "Comment": "Altering Route53 weights for canary blue-green deployment",
+  "StartAt": "FirstState",
+  "States": {
+    "FirstState": {
+      "Type": "Pass",
+      "Result": 10,
+      "ResultPath":"$.weight",
+      "Next": "change_10_percent"
+    },
+    "change_10_percent": {
+      "Type": "Task",
+      "Resource": "",
+      "ResultPath":"$.result_10",
+      "TimeoutSeconds":3,
+      "Next": "wait_60_secondsA"
+    },
+    "wait_60_secondsA": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "check_healthA"
+    },
+    "check_healthA":{
+        "Type": "Task",
+        "Resource": "",
+        "TimeoutSeconds":3,
+      "ResultPath":"$.health",
+        "Next": "ChoiceStateA"
+    },
+    "ChoiceStateA": {
+      "Type": "Choice",
+      "Choices":[
+        {
+          "Variable": "$.health.State",
+          "StringEquals":"healthy",
+          "Next": "send_50"
+        }
+      ],
+      "Default":"fall-back"
+    },
+    "fall-back":{
+      "Type": "Pass",
+      "Result": 0,
+      "ResultPath":"$.weight",
+      "Next": "change_0_percent"
+    },
+    "change_0_percent":{
+        "Type": "Task",
+        "Resource": "",
+        "ResultPath":"$.target",
+        "TimeoutSeconds":3,
+        "Next": "DefaultState"
+    },
+    "DefaultState": {
+      "Type": "Fail",
+      "Cause": "New ECS service is not healthy!"
+    },
+    "send_50": {
+      "Type": "Pass",
+      "Result": 50,
+      "InputPath":"$.target",
+      "ResultPath":"$.weight",
+      "Next": "change_50_percent"
+      },
+    "change_50_percent": {
+      "Type": "Task",
+      "Resource": "",
+      "ResultPath":"$.result_50",
+      "TimeoutSeconds":3,
+      "Next": "wait_60_secondsB"
+      },
+    "wait_60_secondsB": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "check_healthB"
+    },
+    "check_healthB":{
+        "Type": "Task",
+        "Resource": "",
+        "TimeoutSeconds":3,
+      "ResultPath":"$.health",
+        "Next": "ChoiceStateB"
+    },
+    "ChoiceStateB": {
+      "Type": "Choice",
+      "Choices":[
+        {
+          "Variable": "$.health.State",
+          "StringEquals":"healthy",
+          "Next": "send_100"
+        }
+      ],
+      "Default":"fall-back"
+    },
+    "send_100": {
+      "Type": "Pass",
+      "Result": 100,
+      "InputPath":"$.target",
+      "ResultPath":"$.weight",
+      "Next": "change_100_percent"
+      },
+    "change_100_percent": {
+      "Type": "Task",
+      "Resource": "",
+      "ResultPath":"$.result_100",
+      "TimeoutSeconds":3,
+      "Next":"wait_60_secondsC"
+    },
+    "check_healthC":{
+        "Type": "Task",
+        "Resource": "",
+        "TimeoutSeconds":3,
+      "ResultPath":"$.health",
+        "Next": "ChoiceStateC"
+    },
+    "ChoiceStateC": {
+      "Type": "Choice",
+      "Choices":[
+        {
+          "Variable": "$.health.State",
+          "StringEquals":"healthy",
+          "Next": "SuccessState"
+        }
+      ],
+      "Default":"fall-back"
+    },
+        "wait_60_secondsC": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "check_healthC"
+    },
+    "SuccessState": {
+      "Type": "Pass",
+      "Result" : "True",
+      "End": true
+    }
+  }
+}
