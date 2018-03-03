@@ -11,18 +11,26 @@ Congratulations. You have successfully helped the team at catsndogs.lol build a 
 7.	Delete the CloudWatch events ImageAssessor and HandleECSEvents
 8.	Delete the CloudWatch alarms ScaleDownSpotFleet and ScaleUpSpotFleet
 9.	Delete the CloudWatch Logs log groups for:
-a.	aws/codebuild/dogs-build
-b.	All log groups beginning with aws/lambda/Lab7
+
+    a.	aws/codebuild/dogs-build
+
+    b.	All log groups beginning with aws/lambda/Lab7
+
 7.	Delete the CodePipeline pipeline.
 8.	Delete the CodeBuild project.
 9.	Empty and delete the CodeUploads S3 bucket.
 10.	Delete the Step Functions state machine.
 11.	Delete the Route 53 A-type record sets inside the catsndogs.lol hosted zone.
 12.	Delete the CloudFormation stacks you created. Because later labs rely on the stacks from earlier labs, you should delete the Lab0 stack only after the others have reached the DELETE_COMPLETE state:
-a.	Lab7: catsndogsECStasksandservices-green
-b.	Lab2: Lab2-create-ecs-tasks-and-services and Lab2-loadgenerator
-c.	Lab1: Lab1-add-ondemand-asg-to-cluster
-d.	Lab0: catsndogssetup
+
+    a.	Lab7: catsndogsECStasksandservices-green
+
+    b.	Lab2: Lab2-create-ecs-tasks-and-services and Lab2-loadgenerator
+
+    c.	Lab1: Lab1-add-ondemand-asg-to-cluster
+
+    d.	Lab0: catsndogssetup
 
 Feedback? Comments? catsndogs@amazon.com
+
 **Thank you**

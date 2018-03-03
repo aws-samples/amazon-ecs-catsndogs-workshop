@@ -9,33 +9,50 @@ You will also integrate AWS CodePipeline with AWS CloudFormation to update the e
 1.	From the Lab-6-Artifacts folder, upload the templates.zip and dogs.zip to the S3 bucket with CodeUploadS3Bucket in the name. Templates.zip contains a copy of the templates from earlier labs, and dogs.zip contains source code for the dogs container.
 
 2.	Create a new CodePipeline pipeline. The Source should be the dogs.zip you uploaded to the S3 bucket. In the Build step, create a new CodeBuild project. For the build environment, use an image managed by AWS CodeBuild. Use the Ubuntu Docker image version 1.12.1.
-a.	Use the role with CatsnDogsBuild in the name.
-b.	In Advanced settings, add three environment variables:
-AWS_DEFAULT_REGION: **<your AWS region>** *for example ap-southeast-2*
-AWS_ACCOUNT_ID: **<the account ID of your AWS account>**
-REPOSITORY_URI: **<URI of your dogs ECR repository>** *for example: 1234567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs*
-c.	Do not configure a deployment provider. You will configure a custom deployment provider in a later step with more details than are provided for in the wizard.
-d.	Use the IAM role with CatsnDogsPipeline in the name.
+
+    a.	Use the role with CatsnDogsBuild in the name.
+
+    b.	In Advanced settings, add three environment variables:
+
+      AWS_DEFAULT_REGION: **<your AWS region>** *for example ap-southeast-2*
+
+      AWS_ACCOUNT_ID: **<the account ID of your AWS account>**
+
+      REPOSITORY_URI: **<URI of your dogs ECR repository>** *for example: 1234567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs*
+
+    c.	Do not configure a deployment provider. You will configure a custom deployment provider in a later step with more details than are provided for in the wizard.
+
+    d.	Use the IAM role with CatsnDogsPipeline in the name.
 
 Because you have already deployed tasks and services to your cluster using CloudFormation, you will continue to use that as the deployment tool. CloudFormation will perform a stack update to update the running tasks and services. To use CloudFormation as part of the pipeline, the template needs to be defined within the pipeline.
 
 3. Edit the pipeline Source stage and add a new Action. Use the S3 source provider, and specify the location of the templates.zip that you uploaded to the S3 bucket. In Output artifact, enter **template**
 
 4.	You will now configure a customized Deploy state which uses CloudFormation. Add a new Deploy stage to the end of the pipeline. Choose CloudFormation as the deployment provider.
-a.	For Action mode, choose Create or update a stack.
-b.	Update the stack from lab 2. If you followed the instructions, this should be called *catsndogsECStasksandservices*
-c.	In Template file enter: `template::Lab2-create-ecs-tasks-and-services.yml`
-This will use the “template” output artifact from the Source step, and the Lab2-create-ecs-tasks-and-services.yml contained within that artifact.
-d.	Leave the configuration file blank
-e.	For Capabilities, choose CAPABILITY_NAMED_IAM
-f.	For the IAM role, choose the role with CatsnDogsCloudFormation in the name.
-g.	In Advanced, enter the following in Parameter Overrides. Replace the accountid and region with your AWS account ID and region:
-`
-{ "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "<accountid>.dkr.ecr.<region>.amazonaws.com"}
-`
-For example:
-`{ "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "123456789011.dkr.ecr.ap-southeast-2.amazonaws.com"}
-`
+
+    a.	For Action mode, choose Create or update a stack.
+
+    b.	Update the stack from lab 2. If you followed the instructions, this should be called *catsndogsECStasksandservices*
+
+    c.	In Template file enter: `template::Lab2-create-ecs-tasks-and-services.yml`
+
+    This will use the “template” output artifact from the Source step, and the Lab2-create-ecs-tasks-and-services.yml contained within that artifact.
+
+    d.	Leave the configuration file blank
+
+    e.	For Capabilities, choose CAPABILITY_NAMED_IAM
+
+    f.	For the IAM role, choose the role with CatsnDogsCloudFormation in the name.
+
+    g.	In Advanced, enter the following in Parameter Overrides. Replace the accountid and region with your AWS account ID and region:
+
+      `
+      { "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "<accountid>.dkr.ecr.<region>.amazonaws.com"}
+      `
+
+      For example:
+      `{ "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "123456789011.dkr.ecr.ap-southeast-2.amazonaws.com"}
+      `
 
 The parameter override updates the CloudFormation *DogTag* parameter with the Docker image tag created during the build process. *DogTag* will be replaced with the tag associated with the new image created by the Build state, and *ImageRepo* will be replaced with the URL of your repository.  More information about parameter overrides can be found in the CodePipeline documentation: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-parameter-override-functions.html
 
