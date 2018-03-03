@@ -1,37 +1,5 @@
-# Workshop overview
-Welcome to catsndogs.lol, the fifth most highly rated cat and dog meme sharing website in Australia and New Zealand. Our mission is to serve a wide range quality of cat and dog memes to our customers. Memes come and go quickly, and we are starting to see larger and larger surges in customer demand.
-catsndogs.lol uses Docker containers to host our application. Until today we’ve run everything on a spare laptop, but now we’re moving to the Amazon Elastic Container Service (ECS). Our DevOps Shepherd wants to take advantage of the latest and greatest features of the ECS platform. We also have several new initiatives that the developers and data science teams are keen to release.
-As the new DevOps team, you will create the ECS environment, deploy the cats and dogs applications, cope with our hoped-for scaling issues, and enable the other teams to release new features to make our customers happier than ever.
-**Welcome aboard!**
-
-
-
-# Initial environment setup
-
-### Prerequisites
-This workshop requires:
-- A laptop with Wi-Fi running Microsoft Windows, Mac OS X, or Linux.
-- The AWSCLI installed.
-- An Internet browser such as Chrome, Firefox, Safari, or Edge.
-- An AWS account. You will create AWS resources including IAM roles during the workshop.
-- An EC2 key pair created in the AWS region you are working in.
-
-### Initial Setup
-1.	Download and extract the workshop materials zip from http://docs.catsndogs.lol/materials.zip This contains the CloudFormation templates and other materials you will need during the workshop.
-
-2.	If you do not already have an EC2 keypair created, sign-in to the AWS EC2 console at https://console.aws.amazon.com/ec2/
-a.	Click Key Pairs and then click Create Key Pair.
-b.	Give the key pair a name and click Create. The console will generate a new key pair and download the private key. Keep this somewhere safe.
-
-2.	Deploy the initial CloudFormation template. This creates IAM roles, an S3 bucket, and other resources that you will use in later labs. The template is called `Lab0-baseline-setup.yml` If you are sharing an AWS account with someone else doing the workshop, only one of you needs to create this stack. 
-In Stack name, enter **catsndogssetup**. Later labs will reference this stack by name, so if you choose a different stack name you will need to change the *LabSetupStackName* parameter in later labs. 
-
-3.	Be sure to tick the *I acknowledge that AWS CloudFormation might create IAM resources with custom names* check box.	
-
-
-
 # Lab 1 - Cost management and EC2 scaling
-### Overview	
+### Overview
 The catsndogs.lol environment has been running on a spare laptop, but today you will move everying to a new AWS ECS cluster.
 Because the company is cost-conscious, the majority of our capacity will use EC2 Spot fleet instances. Because elasticity is also important, you will set up Auto Scaling for the Spot fleet to scale up and down as demand increases and decreases.
 For long-term stability of core capacity, you will also add a small group of on-demand EC2 instances to the cluster.
@@ -41,7 +9,7 @@ At the end of this lab you will have an ECS cluster composed of Spot fleet insta
 1.	In the ECS console, create a new ECS cluster. Use the cluster creation wizard to create a new cluster composed of Spot instances:
 a.	The cluster should be named **catsndogsECScluster**. This name is used in later labs, so if you name the cluster something else you will have to remember this when running later commands.
 b.	Select several instance types from a range of instance types. It is recommended you use smaller instance sizes rather than large ones. For example: m4.large, c4.large, r4.large, i3.large. You may also use previous-generation families.
-c.	Set a maximum bid price of $0.25. 
+c.	Set a maximum bid price of $0.25.
 d.	Set the number of instances to 3.
 e.	Launch instances into the VPC named ECSVPC, using the private subnets.
 f.	Use the security group with InstanceSecurityGroup in the name.
@@ -58,8 +26,8 @@ d.	Delete the pre-created Notification action.
 
 4.	Repeat step 3 to create a new alarm called **ScaleIn**. Have the alarm enter an ALARM state when the metric is below 20%.
 
-5.	Set up Auto Scaling for the Spot fleet. Spot fleet Auto Scaling is a property of the Spot request, so this is located in the EC2 Console Spot Requests. 
-a. Set Auto Scaling to scale between 3 and 10 instances. 
+5.	Set up Auto Scaling for the Spot fleet. Spot fleet Auto Scaling is a property of the Spot request, so this is located in the EC2 Console Spot Requests.
+a. Set Auto Scaling to scale between 3 and 10 instances.
 b. Create two Auto Scaling policies, one called ScaleUp and one called ScaleDown. You may have to click the link that says *Scale Spot fleet using step or simple scaling policies*
 c. In the ScaleUp policy, use Define Steps to add 2 instances when the MemoryReservation is between 20 and 50, and add 3 instances when the MemoryReservation is over 50.
 d. In the ScaleDown policy, use Define Steps to remove 1 instance when the MemoryReservation is between 10 and 20, and remove 2 instances when the MemoryReservation is below 10.
@@ -90,7 +58,7 @@ You should now have an ECS cluster composed of three instances from the Spot fle
 
 
 # Lab 2 - ECS Service deployment and task Auto Scaling
-### Overview	
+### Overview
 Now you have an ECS cluster running, you need to deploy the catsndogs.lol tasks and services. You also need to test the deployment works, and run a load test against the system to ensure it scales as expected.
 You will deploy an ECS service for the homepage, and separate ECS services for cats and dogs. Having separate ECS services allows catsndogs.lol to scale the cats and dogs services separately based on demand.
 You will set up Task Auto Scaling with proportional scaling actions. Multiple scaling actions allows ECS to respond by rapidly adding more tasks if the system comes under heavy load quickly.
@@ -140,7 +108,7 @@ In this lab, you will configure Parameter Store and deploy a new version of the 
 a.	Use the Task Role that start with catsndogssetup
 b.	Change the revision of the cats container from :v1 to :v2
 c.	Add environment variables of:
-key: **PARAMETER_STORE_NAME** with value: **UnicornLocation** 
+key: **PARAMETER_STORE_NAME** with value: **UnicornLocation**
 key: **REGION** with value: **<your_AWS_region>** *for example: us-west-2*
 key: **Tag** with value: **v2**
 
@@ -155,7 +123,7 @@ key: **Tag** with value: **v2**
 
 
 # Lab 4 - Running ECS tasks based on time and events
-### Overview	
+### Overview
 catsndogs is growing and becoming more successful, but rapid growth brings its own problems. Someone (probably Buzzy) has uploaded several cat images that haven’t been through our rigorous assessment process.
 In response, the development team have created a new automatic image assessment algorithm called ImageAssessor. The initial release selects several images at random, removes them, and then exits. A future release will select identify and remove only non-cat images. The priority now is to get the ImageAssessor container into production.
 The cat-image-standards sub-committee has determined that running the ImageAssessor container every two minutes should ensure our quality bar remains high.
@@ -177,7 +145,7 @@ View the cats pages to confirm that some pages are now displaying a blank image.
 
 5.	Disable the ImageAssessor schedule ECS task.
 
-The ImageAssessor also has the ability to restore all the cat images, just in case it was run too aggressively. It will restore the cats images if an environment variable called RESETPICTURES is set to 1. 
+The ImageAssessor also has the ability to restore all the cat images, just in case it was run too aggressively. It will restore the cats images if an environment variable called RESETPICTURES is set to 1.
 
 6.	In the cluster, use Run new Task to run two new ImageAssessor tasks. In the Run new Task dialog, override the environment variables to add a new environment variable:
 Key: **RESETPICTURES** with value: **1**
@@ -188,8 +156,8 @@ http://catsn-catsn-123455678-abcdefgh.us-west-2.elb.amazonaws.com/cats/api/list-
 
 
 # Lab 5 - Machine Learning containers and placement constraints
-### Overview	
-After the quite simplistic image filtering using the ImageAssessor container, the catsndogs.lol Data Scientists want to deploy a machine learning container. This should be much better at identifying cats (and dogs!) in the images. 
+### Overview
+After the quite simplistic image filtering using the ImageAssessor container, the catsndogs.lol Data Scientists want to deploy a machine learning container. This should be much better at identifying cats (and dogs!) in the images.
 However, they only want to run it on EC2 instances with a large number of CPUs so it doesn’t interfere with the website.
 In this lab, you will create a new task and configure an ECS custom constraint that uses built-in attributes. You will then create a new service with a custom placement strategy for the tasks within the service. This ensures the tasks are scheduled on container instances that meet the data science team’s requirements.
 After completing this lab, you will understand how to use ECS placement constraints to schedule tasks on specific container instance types, and attach custom attributes to container instances, then use those attributes to constrain the placement of tasks.
@@ -228,9 +196,9 @@ One of the container instances should now have a custom attribute, and the cats 
 
 
 # Lab 6 - Automated Deployments
-### Overview	
+### Overview
 The catsndogs.lol development team are planning to release updates to their applications more frequently. They want to build an automated deployment pipeline, that can be used to deploy updated versions of their applications with minimal manual intervention, to reduce the time it takes to get exciting new capabilities in the hands of their users.
-In this lab, you will set up AWS CodePipeline to monitor an S3 bucket for changes to the source code. When new source code is uploaded to the bucket, CodePipeline will coordinate building and deploying the Docker based application. 
+In this lab, you will set up AWS CodePipeline to monitor an S3 bucket for changes to the source code. When new source code is uploaded to the bucket, CodePipeline will coordinate building and deploying the Docker based application.
 You will create an AWS CodeBuild project build the Docker image and push it to a repository. The CodeBuild project will tag the newly built dogs containers with a version number.
 You will also integrate AWS CodePipeline with AWS CloudFormation to update the existing ECS tasks and services. The pipeline will use the version number of the dogs containers as a parameter when updating the CloudFormation stack, so that the right version of the container is deployed.
 
@@ -257,7 +225,7 @@ c.	In Template file enter: `template::Lab2-create-ecs-tasks-and-services.yml`
 This will use the “template” output artifact from the Source step, and the Lab2-create-ecs-tasks-and-services.yml contained within that artifact.
 d.	Leave the configuration file blank
 e.	For Capabilities, choose CAPABILITY_NAMED_IAM
-f.	For the IAM role, choose the role with CatsnDogsCloudFormation in the name. 
+f.	For the IAM role, choose the role with CatsnDogsCloudFormation in the name.
 g.	In Advanced, enter the following in Parameter Overrides. Replace the accountid and region with your AWS account ID and region:
 `
 { "DogTag": { "Fn::GetParam" : [ "MyAppBuild", "build.json", "tag" ] }, "ImageRepo": "<accountid>.dkr.ecr.<region>.amazonaws.com"}
@@ -271,26 +239,26 @@ The parameter override updates the CloudFormation *DogTag* parameter with the Do
 
 h.	In Input artifacts, for Input artifact #1 choose **template** and for Input artifact #2 choose **MyAppBuild**
 
-5.	From the Lab-6-Artifacts/v2 folder, upload dogs.zip to the S3 bucket. This version of the container includes a new-style background. Once the upload is complete, verify the pipeline runs successfully. 
+5.	From the Lab-6-Artifacts/v2 folder, upload dogs.zip to the S3 bucket. This version of the container includes a new-style background. Once the upload is complete, verify the pipeline runs successfully.
 
 6.	While the pipeline is running, open the CodeBuild console and view the Build History of the most recent build. You should be able to see the logs from the build.
 
-7.	It may take a few minutes for the new containers to deploy, after which the new Dogs pages should display with fancy new background color. 
+7.	It may take a few minutes for the new containers to deploy, after which the new Dogs pages should display with fancy new background color.
 
 The build process for the dogs Docker image uses the AWS CLI to copy the latest dog memes from an S3 bucket. Although the images are publicly readable, any S3 operation requires AWS credentials. In this case, the credentials from the build environment need to be passed through to the Docker build process, otherwise the build process will fail with “Unable to locate credentials”.
-More details can be found here: http://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-versions 
+More details can be found here: http://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-versions
 
 **Extension activity:** Examine the buildspec.yml file in the dogs.zip file, to understand the steps the CodeBuild project is taking to build and push the docker image. How is the image tagged? How does the CodePipeline pipeline retrieve the tag, to use as a parameter when updating the CloudFormation stack?
 
 
 
-# Lab 7 - Advanced Deployment Techniques 
+# Lab 7 - Advanced Deployment Techniques
 ### Overview
 Now you have a working automated deployment pipeline. Management are extremely happy. However, some buggy code which made its way in to the most recent release of cats, took the cats service offline for a while. The cat lovers were not happy.
 To address this problem, management have asked you to come up with a safer way to deploy updates, an approach that allows an easy roll back to previous versions, in the event of a problem.
 You will setup a blue-green deployment solution, which, because we love cats so much, incorporates some canaries. This solution will allow you to release new versions of the cats application in a staged approach, whilst maintaining a running copy of the previous version for quick roll-back.
 The blue-green deployment method will use CloudWatch Events to detect new containers being created. If those containers are part of the a “green” deployment, the CloudWatch Event will trigger a Lambda function. The Lambda function will invoke a Step Functions state machine which performs health checks and gradually moves traffic to the new deployment. The state machine will perform health checks, failing back to the existing stack in the event of a health check failure.
-More information about this can be found on the awslabs github repo: 
+More information about this can be found on the awslabs github repo:
 https://github.com/awslabs/ecs-canary-blue-green-deployment
 
 ### High-level Instructions
@@ -346,7 +314,7 @@ b.	All log groups beginning with aws/lambda/Lab7
 10.	Delete the Step Functions state machine.
 11.	Delete the Route 53 A-type record sets inside the catsndogs.lol hosted zone.
 12.	Delete the CloudFormation stacks you created. Because later labs rely on the stacks from earlier labs, you should delete the Lab0 stack only after the others have reached the DELETE_COMPLETE state:
-a.	Lab7: catsndogsECStasksandservices-green 
+a.	Lab7: catsndogsECStasksandservices-green
 b.	Lab2: Lab2-create-ecs-tasks-and-services and Lab2-loadgenerator
 c.	Lab1: Lab1-add-ondemand-asg-to-cluster
 d.	Lab0: catsndogssetup
