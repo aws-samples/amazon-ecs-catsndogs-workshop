@@ -1,7 +1,3 @@
-## Amazon Ecs Catsndogs Workshop
-
-This is self-paced workshop designed to allow developers and system administrators to get hands on with Amazon Elastic Container Service concepts such as service and container-instance auto-scaling, spot-fleet integration, container placement strategies, service discovery, secrets management with AWS Systems Manager Parameter Store, time-based and event-based scheduling, and automated deployment pipelines.
-
 # Workshop overview
 Welcome to catsndogs.lol, the fifth most highly rated cat and dog meme sharing website in Australia and New Zealand. Our mission is to serve a wide range quality of cat and dog memes to our customers. Memes come and go quickly, and we are starting to see larger and larger surges in customer demand.
 catsndogs.lol uses Docker containers to host our application. Until today we’ve run everything on a spare laptop, but now we’re moving to the Amazon Elastic Container Service (ECS). Our DevOps Shepherd wants to take advantage of the latest and greatest features of the ECS platform. We also have several new initiatives that the developers and data science teams are keen to release.
@@ -25,11 +21,27 @@ This workshop requires:
 a.	Click Key Pairs and then click Create Key Pair.
 b.	Give the key pair a name and click Create. The console will generate a new key pair and download the private key. Keep this somewhere safe.
 
-2.	Deploy the initial CloudFormation template. This creates IAM roles, an S3 bucket, and other resources that you will use in later labs. The template is called `cfn-templates/Lab0-baseline-setup.yml` If you are sharing an AWS account with someone else doing the workshop, only one of you needs to create this stack.
+2.	Deploy the initial CloudFormation template. This creates IAM roles, an S3 bucket, and other resources that you will use in later labs. The template is called `cfn-templatesLab/0-baseline-setup.yml` If you are sharing an AWS account with someone else doing the workshop, only one of you needs to create this stack.
 In Stack name, enter **catsndogssetup**. Later labs will reference this stack by name, so if you choose a different stack name you will need to change the *LabSetupStackName* parameter in later labs.
 
 3.	Be sure to tick the *I acknowledge that AWS CloudFormation might create IAM resources with custom names* check box.
 
+### Where do you go from here?
+
+| Labs |
+| ------------- |
+| [Cost management and EC2 scaling](Lab-1-Artifacts/) |
+| [ECS Service deployment and task Auto Scaling](Lab-2-Artifacts/) |
+| [Deploying a new version of the cats service with secrets management](Lab-3-Artifacts/) |
+| [Running ECS tasks based on time and events](Lab-4-Artifacts/) |
+| [Machine Learning containers and placement constraints](Lab-5-Artifacts/) |
+| [Automated Deployments](Lab-6-Artifacts/) |
+| [Advanced Deployment Techniques](Lab-7-Artifacts/) |
+| [Clean up](#) |
+
+## Participation
+
+We encourage participation; if you find anything, please submit an issue. However, if you want to help raise the bar, submit a PR!
 
 ## License
 
