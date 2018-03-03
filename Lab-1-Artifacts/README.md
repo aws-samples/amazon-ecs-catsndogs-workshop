@@ -62,11 +62,9 @@ At the end of this lab you will have an ECS cluster composed of Spot fleet insta
 
    	d.	Paste in the following User Data:
 
-```
-#!/bin/bash
+		#!/bin/bash
 
-echo ECS_CLUSTER=catsndogsECScluster >> /etc/ecs/ecs.config
-```
+		echo ECS_CLUSTER=catsndogsECScluster >> /etc/ecs/ecs.config
 
 	e.	Use the security group with InstanceSecurityGroup in the name.
 
