@@ -32,7 +32,7 @@ b. Create two Auto Scaling policies, one called ScaleUp and one called ScaleDown
 c. In the ScaleUp policy, use Define Steps to add 2 instances when the MemoryReservation is between 20 and 50, and add 3 instances when the MemoryReservation is over 50.
 d. In the ScaleDown policy, use Define Steps to remove 1 instance when the MemoryReservation is between 10 and 20, and remove 2 instances when the MemoryReservation is below 10.
 
-6.	Create an Auto Scaling group of on-demand instances to provide long-term core capacity for the ECS cluster. If you have used Auto Scaling groups with ECS before, you can launch a CloudFormation stack to create this automatically. The CloudFormation template is called `Lab1-add-ondemand-asg-to-cluster.yml` If you have not used Auto Scaling groups with ECS, you can follow the steps below to learn how to do this:
+6.	Create an Auto Scaling group of on-demand instances to provide long-term core capacity for the ECS cluster. If you have used Auto Scaling groups with ECS before, you can launch a CloudFormation stack to create this automatically. The CloudFormation template is called `cfn-templates/Lab1-add-ondemand-asg-to-cluster.yml` If you have not used Auto Scaling groups with ECS, you can follow the steps below to learn how to do this:
 
 7.	You will need a copy of the AMI ID of an instance that was launched when you created the ECS cluster earlier. You can find this from the properties of any of the Spot fleet instances.
 

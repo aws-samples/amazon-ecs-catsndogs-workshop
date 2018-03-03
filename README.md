@@ -21,7 +21,7 @@ This workshop requires:
 a.	Click Key Pairs and then click Create Key Pair.
 b.	Give the key pair a name and click Create. The console will generate a new key pair and download the private key. Keep this somewhere safe.
 
-2.	Deploy the initial CloudFormation template. This creates IAM roles, an S3 bucket, and other resources that you will use in later labs. The template is called `cfn-templatesLab/0-baseline-setup.yml` If you are sharing an AWS account with someone else doing the workshop, only one of you needs to create this stack.
+2.	Deploy the initial CloudFormation template. This creates IAM roles, an S3 bucket, and other resources that you will use in later labs. The template is called `cfn-templates/Lab0-baseline-setup.yml` If you are sharing an AWS account with someone else doing the workshop, only one of you needs to create this stack.
 In Stack name, enter **catsndogssetup**. Later labs will reference this stack by name, so if you choose a different stack name you will need to change the *LabSetupStackName* parameter in later labs.
 
 3.	Be sure to tick the *I acknowledge that AWS CloudFormation might create IAM resources with custom names* check box.

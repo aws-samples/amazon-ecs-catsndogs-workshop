@@ -6,7 +6,7 @@ You will set up Task Auto Scaling with proportional scaling actions. Multiple sc
 Once the services and Auto Scaling are set up, you will launch a load generator that targets the cats and dogs pages. This will cause the services to scale up, which will also cause the Spot Fleet instances to scale up.
 
 ### High-level Instructions
-1.	Deploy a CloudFormation stack called *catsndogsECStasksandservices* to create the ECS tasks and services for catsndogs.lol, as well as the CloudWatch alarms that will be used for Task Auto Scaling. The template for this is called `Lab2-create-ecs-tasks-and-services.yml`
+1.	Deploy a CloudFormation stack called *catsndogsECStasksandservices* to create the ECS tasks and services for catsndogs.lol, as well as the CloudWatch alarms that will be used for Task Auto Scaling. The template for this is called `cfn-templates/Lab2-create-ecs-tasks-and-services.yml`
 
 2.	Find the load balancer with **catsn-catsn** in the name. Copy the DNS name into your browser and validate that the site works.
 
@@ -16,7 +16,7 @@ b. Create a policy called ScaleDown. Use the alarm with "CatsScaleDown" in the n
 
 4.	Repeat step 3 for the dogs service.
 
-5.	Deploy a second CloudFormation stack to generate load against the website. The template for this is called `Lab2-loadgenerator.yml`
+5.	Deploy a second CloudFormation stack to generate load against the website. The template for this is called `cfn-templates/Lab2-loadgenerator.yml`
 
 6.	In CloudWatch view the metric RequestCount for the load balancer’s Target Groups. Ensure you set the Statistic to Sum, and the Period to 10 seconds.
 
