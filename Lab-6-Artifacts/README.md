@@ -59,7 +59,7 @@ The parameter override updates the CloudFormation *DogTag* parameter with the Do
 
 h.	In Input artifacts, for Input artifact #1 choose **template** and for Input artifact #2 choose **MyAppBuild**
 
-5.	From the Lab-6-Artifacts/v2 folder, upload dogs.zip to the S3 bucket. This version of the container includes a new-style background. Once the upload is complete, verify the pipeline runs successfully.
+5.	From the [Lab-6-Artifacts/v2](Lab-6-Artifacts/v2) folder, upload dogs.zip to the S3 bucket. This version of the container includes a new-style background. Once the upload is complete, verify the pipeline runs successfully.
 
 6.	While the pipeline is running, open the CodeBuild console and view the Build History of the most recent build. You should be able to see the logs from the build.
 
