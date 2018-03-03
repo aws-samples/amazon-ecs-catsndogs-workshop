@@ -37,16 +37,22 @@ d. In the ScaleDown policy, use Define Steps to remove 1 instance when the Memor
 7.	You will need a copy of the AMI ID of an instance that was launched when you created the ECS cluster earlier. You can find this from the properties of any of the Spot fleet instances.
 
 8.	Create a new Launch Configuration:
+
 ...a.	Use the AMI ID you copied in step 7.
+
 ...b.	Use an m4.large instance type.
+
 ...c.	Use the IAM Role with EC2InstanceProfile in the name.
+
 ...d.	Paste in the following User Data:
+
 ```
 #!/bin/bash
 
 echo ECS_CLUSTER=catsndogsECScluster >> /etc/ecs/ecs.config
 
 ```
+
 ...e.	Use the security group with InstanceSecurityGroup in the name.
 
 9.	Create an Auto Scaling group using the Launch Configuration you just created:
