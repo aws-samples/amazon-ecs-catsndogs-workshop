@@ -54,7 +54,7 @@ Because you have already deployed tasks and services to your cluster using Cloud
 
 The parameter override updates the CloudFormation *DogTag* parameter with the Docker image tag created during the build process. *DogTag* will be replaced with the tag associated with the new image created by the Build state, and *ImageRepo* will be replaced with the URL of your repository.  More information about parameter overrides can be found in the CodePipeline documentation: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-parameter-override-functions.html
 
-      h.	In Input artifacts, for Input artifact #1 choose **template** and for Input artifact #2 choose **MyAppBuild**
+    h.	In Input artifacts, for Input artifact #1 choose **template** and for Input artifact #2 choose **MyAppBuild**
 
 5.	From the [Lab-6-Artifacts/v2](v2/) folder, upload dogs.zip to the S3 bucket. This version of the container includes a new-style background. Once the upload is complete, verify the pipeline runs successfully.
 
