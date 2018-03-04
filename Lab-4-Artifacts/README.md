@@ -28,3 +28,6 @@ Key: **RESETPICTURES** with value: **1**
 
 7.	These containers will run for 30 seconds and reset the pictures in the cats tasks. Verify the cat pictures have beeen restored by the cats API again. Replace the URL in the example below with the URL of your load balancer:
 http://catsn-catsn-123455678-abcdefgh.us-west-2.elb.amazonaws.com/cats/api/list-pictures/
+
+# What's Next
+[Machine Learning containers and placement constraints](../Lab-5-Artifacts/)

@@ -69,3 +69,6 @@ The build process for the dogs Docker image uses the AWS CLI to copy the latest 
 More details can be found here: http://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-versions
 
 **Extension activity:** Examine the buildspec.yml file in the dogs.zip file, to understand the steps the CodeBuild project is taking to build and push the docker image. How is the image tagged? How does the CodePipeline pipeline retrieve the tag, to use as a parameter when updating the CloudFormation stack?
+
+# What's Next
+[Advanced Deployment Techniques](../Lab-6-Artifacts/)

@@ -37,3 +37,6 @@ aws ecs put-attributes --cluster catsndogsECScluster --attributes "name=catslike
 
 You should now have the MXNet service running two containers on the specific instance type(s) and size(s) you constrained the task to.
 One of the container instances should now have a custom attribute, and the cats tasks should have a custom constraint that forces them all to run on that container instance.
+
+# What's Next
+[Automated Deployments](../Lab-6-Artifacts/)

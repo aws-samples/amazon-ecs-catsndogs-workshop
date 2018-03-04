@@ -36,3 +36,6 @@ It might take several minutes for the state machine and Route 53 changes to comp
 
 **Extension exercise:** It has come to the attention of the bean-counters that that the CloudWatch Events rule is being triggered more often than the number of times a new service deployment occurs. This is bad because unused events were swapped out for a steady supply of catnip.
 For the sake of the cats, please investigate why this is happening, and implement a solution that reduces the number of times the catsndogECSRule triggers. Start by viewing the Lambda logs in CloudWatch. See if anything erroneous stands out. What things could be done to resolve the issue?
+
+# What's Next
+[Clean up](../Lab-99-Clean-up/)

@@ -28,3 +28,6 @@ In this lab, you will configure Parameter Store and deploy a new version of the 
 5.	You should see the cats page change to the *catsndogs.lol new improved v2.0 cats page* with a blue background. There is a one in ten chance that the page will load a unicorn image. Shout out loud when you see one!
 
 **Extension activity:** The new cats pages show the containerID at the bottom of the page. Examine the cats_v2 source code and work out how this information is obtained, and how the v2 cats container obtains the location of the unicorns from Parameter Store.
+
+# What's Next
+[Running ECS tasks based on time and events](../Lab-4-Artifacts/)

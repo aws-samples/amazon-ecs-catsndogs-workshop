@@ -35,3 +35,6 @@ Once the services and Auto Scaling are set up, you will launch a load generator 
 12.	Once you have seen the Spot fleet scale up, stop the LoadGenerator EC2 instance.
 
 You should now have ECS Services defined for cats and dogs, and seen how ECS task Auto Scaling and EC2 Auto Scaling help as the system comes under load.
+
+# What's Next
+[Deploying a new version of the cats service with secrets management](../Lab-3-Artifacts/)
