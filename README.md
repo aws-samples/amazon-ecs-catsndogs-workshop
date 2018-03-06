@@ -42,6 +42,10 @@ In Stack name, enter **catsndogssetup**. Later labs will reference this stack by
 | [Advanced Deployment Techniques](Lab-7-Artifacts/) |
 | [Clean up](Lab-99-Clean-up) |
 
+## Detailed Instructions
+
+Detailed instructions for all of the labs can be found [here](Docs/Docs/Container management at catsndogs.lol - detailed instructions.docx)
+
 ## Participation
 
 We encourage participation; if you find anything, please submit an issue. However, if you want to help raise the bar, submit a PR!
