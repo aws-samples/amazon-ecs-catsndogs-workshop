@@ -44,7 +44,7 @@ In Stack name, enter **catsndogssetup**. Later labs will reference this stack by
 
 ## Detailed Instructions
 
-Detailed instructions for all of the labs can be found [here](Docs/Docs/Container management at catsndogs.lol - detailed instructions.docx)
+Detailed instructions for all of the labs can be found [here](Docs/).
 
 ## Participation
 
