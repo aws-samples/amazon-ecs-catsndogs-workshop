@@ -48,7 +48,7 @@ Detailed instructions for all of the labs can be found [here](Docs/).
 
 ## Participation
 
-We encourage participation; if you find anything, please submit an [issue](issues). However, if you want to help raise the bar, submit a [PR](pulls)!
+We encourage participation; if you find anything, please submit an [issue](https://github.com/aws-samples/amazon-ecs-catsndogs-workshop/issues). However, if you want to help raise the bar, submit a [PR](https://github.com/aws-samples/amazon-ecs-catsndogs-workshop/pulls)!
 
 ## License
 
