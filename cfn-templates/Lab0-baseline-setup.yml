@@ -1,22 +1,25 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
 
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Cloudformation Template to deploy base resources for catsndogs.lol workshop.
+Description: CloudFormation Template to deploy base resources for catsndogs.lol workshop.
+
+
 Resources:
   Vpc:
     Properties:
       CidrBlock: 172.20.0.0/16
-      EnableDnsSupport: 'true'
-      EnableDnsHostnames: 'true'
+      EnableDnsHostnames: true
       Tags:
       - Key: Name
         Value: ECSVPC
       - Key: Network
         Value: Private
     Type: AWS::EC2::VPC
+
   PriSubnet1:
     Properties:
-      VpcId: !Ref 'Vpc'
-      AvailabilityZone: !Select ['0', !GetAZs {Ref: 'AWS::Region'}]
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 0, !GetAZs '']
       CidrBlock: 172.20.1.0/24
       Tags:
       - Key: Name
@@ -24,171 +27,191 @@ Resources:
       - Key: Network
         Value: Private
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Role
         Value: ECS Private Subnet Availability Zone 1
     Type: AWS::EC2::Subnet
+
   PriSubnet2:
     Properties:
-      VpcId: !Ref 'Vpc'
-      AvailabilityZone: !Select ['1', !GetAZs {Ref: 'AWS::Region'}]
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: 172.20.2.0/24
       Tags:
       - Key: Name
         Value: ECS Private Subnet 2
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Private
       - Key: Role
         Value: ECS Private Subnet Availability Zone 2
     Type: AWS::EC2::Subnet
+
   PubSubnet1:
     Properties:
-      VpcId: !Ref 'Vpc'
-      AvailabilityZone: !Select ['0', !GetAZs {Ref: 'AWS::Region'}]
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: 172.20.3.0/24
       Tags:
       - Key: Name
         Value: ECS Public Subnet 1
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Public
       - Key: Role
         Value: ECS Public Subnet Availability Zone 1
     Type: AWS::EC2::Subnet
+
   PubSubnet2:
     Properties:
-      VpcId: !Ref 'Vpc'
-      AvailabilityZone: !Select ['1', !GetAZs {Ref: 'AWS::Region'}]
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: 172.20.4.0/24
       Tags:
       - Key: Name
         Value: ECS Public Subnet 2
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Public
       - Key: Role
         Value: ECS Public Subnet Availability Zone 2
     Type: AWS::EC2::Subnet
+
   InternetGateway:
     Properties:
       Tags:
       - Key: Name
         Value: ECSInternetGateway
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Public
     Type: AWS::EC2::InternetGateway
+
   GatewayToInternet:
     Properties:
-      VpcId: !Ref 'Vpc'
-      InternetGatewayId: !Ref 'InternetGateway'
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
     Type: AWS::EC2::VPCGatewayAttachment
+
   PublicRouteTable:
     Properties:
-      VpcId: !Ref 'Vpc'
+      VpcId: !Ref Vpc
       Tags:
       - Key: Name
         Value: ECSPublicRouteTable
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Public
     Type: AWS::EC2::RouteTable
+
   PublicRoute:
     Properties:
-      RouteTableId: !Ref 'PublicRouteTable'
+      RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref 'InternetGateway'
+      GatewayId: !Ref InternetGateway
     Type: AWS::EC2::Route
+
   PubSubnet1RTAssoc:
     Properties:
-      SubnetId: !Ref 'PubSubnet1'
-      RouteTableId: !Ref 'PublicRouteTable'
+      SubnetId: !Ref PubSubnet1
+      RouteTableId: !Ref PublicRouteTable
     Type: AWS::EC2::SubnetRouteTableAssociation
+
   PubSubnet2RTAssoc:
     Properties:
-      SubnetId: !Ref 'PubSubnet2'
-      RouteTableId: !Ref 'PublicRouteTable'
+      SubnetId: !Ref PubSubnet2
+      RouteTableId: !Ref PublicRouteTable
     Type: AWS::EC2::SubnetRouteTableAssociation
+
   PrivateRouteTable1:
     Properties:
-      VpcId: !Ref 'Vpc'
+      VpcId: !Ref Vpc
       Tags:
       - Key: Name
         Value: ECSPrivateRouteTable1
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Private
     Type: AWS::EC2::RouteTable
+
   PrivateRouteTable2:
     Properties:
-      VpcId: !Ref 'Vpc'
+      VpcId: !Ref Vpc
       Tags:
       - Key: Name
         Value: ECSPrivateRouteTable2
       - Key: Application
-        Value: !Ref 'AWS::StackName'
+        Value: !Ref AWS::StackName
       - Key: Network
         Value: Private
     Type: AWS::EC2::RouteTable
+
   NATGateway1EIP:
     Type: AWS::EC2::EIP
     Properties:
       Domain: Vpc
+
   NATGateway1:
     Type: AWS::EC2::NatGateway
     Properties:
-      AllocationId: !GetAtt [NATGateway1EIP, AllocationId]
-      SubnetId: !Ref 'PubSubnet1'
+      AllocationId: !GetAtt NATGateway1EIP.AllocationId
+      SubnetId: !Ref PubSubnet1
+
   PrivateRoute1:
     Properties:
-      RouteTableId: !Ref 'PrivateRouteTable1'
+      RouteTableId: !Ref PrivateRouteTable1
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref 'NATGateway1'
+      NatGatewayId: !Ref NATGateway1
     Type: AWS::EC2::Route
+
   PrivateRoute2:
     Properties:
-      RouteTableId: !Ref 'PrivateRouteTable2'
+      RouteTableId: !Ref PrivateRouteTable2
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref 'NATGateway1'
+      NatGatewayId: !Ref NATGateway1
     Type: AWS::EC2::Route
+
   PriSubnet1RTAssoc:
     Properties:
-      SubnetId: !Ref 'PriSubnet1'
-      RouteTableId: !Ref 'PrivateRouteTable1'
+      SubnetId: !Ref PriSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
     Type: AWS::EC2::SubnetRouteTableAssociation
+
   PriSubnet2RTAssoc:
     Properties:
-      SubnetId: !Ref 'PriSubnet2'
-      RouteTableId: !Ref 'PrivateRouteTable2'
+      SubnetId: !Ref PriSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
     Type: AWS::EC2::SubnetRouteTableAssociation
+
   ELBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enable HTTP/S to the load balancer
-      VpcId: !Ref 'Vpc'
+      VpcId: !Ref Vpc
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
+        FromPort: 80
+        ToPort: 80
         CidrIp: 0.0.0.0/0
+
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enable access to container instances, from the load balancer only
-      VpcId: !Ref 'Vpc'
+      VpcId: !Ref Vpc
       SecurityGroupIngress:
-      - SourceSecurityGroupId: !Ref 'ELBSecurityGroup'
-        FromPort: '0'
+      - SourceSecurityGroupId: !Ref ELBSecurityGroup
+        FromPort: 0
         IpProtocol: tcp
-        ToPort: '65535'
-# IAM roles:
+        ToPort: 65535
+
+  # IAM roles:
   SpotFleetTaggingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -197,8 +220,10 @@ Resources:
         - Action: sts:AssumeRole
           Effect: Allow
           Principal:
-            Service: [spotfleet.amazonaws.com]
-      ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole']
+            Service: spotfleet.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole
+
   ECSAutoScaleRole:
     Type: AWS::IAM::Role
     Properties:
@@ -207,8 +232,10 @@ Resources:
         - Action: sts:AssumeRole
           Effect: Allow
           Principal:
-            Service: [application-autoscaling.amazonaws.com]
-      ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole']
+            Service: application-autoscaling.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole
+
   ECSServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -216,19 +243,25 @@ Resources:
         Statement:
         - Effect: Allow
           Principal:
-            Service: [ecs.amazonaws.com]
-          Action: ['sts:AssumeRole']
+            Service: ecs.amazonaws.com
+          Action: sts:AssumeRole
       Path: /
       Policies:
       - PolicyName: ecs-service
         PolicyDocument:
           Statement:
           - Effect: Allow
-            Action: ['ec2:AuthorizeSecurityGroupIngress', 'ec2:Describe*', 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer',
-              'elasticloadbalancing:DeregisterTargets', 'elasticloadbalancing:Describe*',
-              'elasticloadbalancing:RegisterInstancesWithLoadBalancer', 'elasticloadbalancing:RegisterTargets',
-              'application-autoscaling:*']
+            Action:
+              - ec2:AuthorizeSecurityGroupIngress
+              - ec2:Describe*
+              - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
+              - elasticloadbalancing:DeregisterTargets
+              - eelasticloadbalancing:Describe*
+              - elasticloadbalancing:RegisterInstancesWithLoadBalancer
+              - elasticloadbalancing:RegisterTargets
+              - application-autoscaling:*
             Resource: '*'
+
   EC2Role:
     Type: AWS::IAM::Role
     Properties:
@@ -236,31 +269,43 @@ Resources:
         Statement:
         - Effect: Allow
           Principal:
-            Service: [ec2.amazonaws.com]
-          Action: ['sts:AssumeRole']
+            Service: ec2.amazonaws.com
+          Action: sts:AssumeRole
       Path: /
-      ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role']
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
       Policies:
       - PolicyName: ecs-service
         PolicyDocument:
           Statement:
           - Effect: Allow
-            Action: ['ecs:CreateCluster', 'ecs:RegisterContainerInstance', 'ecs:DeregisterContainerInstance',
-              'ecs:DiscoverPollEndpoint', 'ecs:Submit*', 'ecs:Poll', 'ecs:StartTelemetrySession',
-              'logs:CreateLogStream', 'logs:PutLogEvents']
+            Action:
+              - ecs:CreateCluster
+              - ecs:RegisterContainerInstance
+              - ecs:DeregisterContainerInstance
+              - ecs:DiscoverPollEndpoint
+              - ecs:Submit*
+              - ecs:Poll
+              - ecs:StartTelemetrySession
+              - logs:CreateLogStream
+              - logs:PutLogEvents
             Resource: '*'
+
   EC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Path: /
-      Roles: [!Ref 'EC2Role']
+      Roles:
+        - !Ref EC2Role
+
   unicornKMSKeyAlias:
-    Type: "AWS::KMS::Alias"
+    Type: AWS::KMS::Alias
     Properties:
       AliasName: alias/keyForUnicorns
       TargetKeyId: !Ref unicornKMSKey
+
   unicornKMSKey:
-    Type: "AWS::KMS::Key"
+    Type: AWS::KMS::Key
     Properties:
       KeyPolicy:
         Version: 2012-10-17
@@ -270,22 +315,19 @@ Resources:
             Effect: Allow
             Principal:
               AWS: !GetAtt catsContainerTaskRole.Arn
-            Action: 'kms:*'
+            Action: kms:*
             Resource: '*'
           - Sid: Enable root user to update permissions later
             Effect: Allow
             Principal:
-              AWS: !Join
-                - ''
-                - - 'arn:aws:iam::'
-                  - !Ref 'AWS::AccountId'
-                  - ':root'
-            Action: 'kms:*'
+              AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+            Action: kms:*
             Resource: '*'
-      Description: "KMS Key for Unicorns"
+      Description: KMS Key for Unicorns
       Tags:
         - Key: Name
           Value: CatsnDogsKey
+
   catsContainerTaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -294,18 +336,21 @@ Resources:
         - Action: sts:AssumeRole
           Effect: Allow
           Principal:
-            Service: [ecs-tasks.amazonaws.com]
-      ManagedPolicyArns: ['arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess', 'arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess']
+            Service: ecs-tasks.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+
   catsContainerRolePolicy:
-    Type: "AWS::IAM::Policy"
+    Type: AWS::IAM::Policy
     Properties:
-      PolicyName: "unicornAccessControl"
+      PolicyName: unicornAccessControl
       Roles:
         - !Ref catsContainerTaskRole
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
               - ssm:GetParameters
             Resource: "*"
@@ -313,37 +358,34 @@ Resources:
               StringLike:
                 ssm:resourceTag/Classification:
                     - Mythical
+
   CloudWatchEventsRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: Allow
             Principal:
-              Service:
-                - "events.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
       ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/CloudWatchEventsFullAccess
-      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
-      Path: "/"
+        - arn:aws:iam::aws:policy/CloudWatchEventsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
+      Path: /
+
   # The CodeBuildServiceRole needs permissions to upload images to ECR as part of the build sequence.
   CatsnDogsCloudFormationRole:
     Type: AWS::IAM::Role
     Properties:
-      #RoleName: CatsnDogsCloudFormationRole
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "cloudformation.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: root
           PolicyDocument:
@@ -363,25 +405,24 @@ Resources:
                   - ecs:UpdateService
                   - ecs:ListTaskDefinitionFamilies
                   - ecs:DeregisterTaskDefinition
+
   CatsnDogsBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      #RoleName: CatsnDogsBuildRole
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "codebuild.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: root
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              - Resource: "arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"
+              - Resource: arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*
                 Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -395,7 +436,9 @@ Resources:
                   - s3:GetObjectVersion
                   - s3:ListBucket
                   - s3:GetObject
-              - Resource: ["arn:aws:s3:::catsndogs-assets", "arn:aws:s3:::catsndogs-assets/*"]
+              - Resource:
+                  - arn:aws:s3:::catsndogs-assets
+                  - arn:aws:s3:::catsndogs-assets/*
                 Effect: Allow
                 Action:
                   - s3:*
@@ -403,7 +446,10 @@ Resources:
                 Effect: Allow
                 Action:
                   - ecr:GetAuthorizationToken
-              - Resource: [!Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dogs", !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cats", !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/simplehomepage"]
+              - Resource:
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dogs
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cats
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/simplehomepage
                 Effect: Allow
                 Action:
                   - ecr:GetDownloadUrlForLayer
@@ -413,25 +459,26 @@ Resources:
                   - ecr:InitiateLayerUpload
                   - ecr:UploadLayerPart
                   - ecr:CompleteLayerUpload
+
   CatsnDogsPipelineServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      #RoleName: CatsnDogsPipelineRole
       Path: /
-      AssumeRolePolicyDocument: |
-        {
-            "Statement": [{
-                "Effect": "Allow",
-                "Principal": { "Service": [ "codepipeline.amazonaws.com" ]},
-                "Action": [ "sts:AssumeRole" ]
-            }]
-        }
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
         - PolicyName: root
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              - Resource: [!Sub "arn:aws:s3:::${CodeUploadS3Bucket}/*", !Sub "arn:aws:s3:::${CodeUploadS3Bucket}"]
+              - Resource:
+                  - !Sub arn:aws:s3:::${CodeUploadS3Bucket}/*
+                  - !Sub arn:aws:s3:::${CodeUploadS3Bucket}
                 Effect: Allow
                 Action:
                   - s3:GetObject
@@ -465,14 +512,14 @@ Resources:
                 Action:
                   -  iam:Passrole
   catsndogsALB:
-    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       LoadBalancerAttributes:
       - Key: idle_timeout.timeout_seconds
-        Value: '50'
+        Value: 50
       Scheme: internet-facing
       SecurityGroups:
-        - !Ref 'ELBSecurityGroup'
+        - !Ref ELBSecurityGroup
       Subnets:
         - !Ref PubSubnet1
         - !Ref PubSubnet2
@@ -485,80 +532,99 @@ Resources:
     Properties:
       VersioningConfiguration:
         Status: Enabled
+
   DogsEcrRepo:
-    Type: "AWS::ECR::Repository"
+    Type: AWS::ECR::Repository
     Properties:
       RepositoryName: dogs
+
   CatsEcrRepo:
-    Type: "AWS::ECR::Repository"
+    Type: AWS::ECR::Repository
     Properties:
       RepositoryName: cats
+
   SimpEcrRepo:
-    Type: "AWS::ECR::Repository"
+    Type: AWS::ECR::Repository
     Properties:
       RepositoryName: simplehomepage
 
+
 Outputs:
+
   CodeUploadS3Bucket:
     Description: S3 bucket for storing application artifacts
     Value: !Ref CodeUploadS3Bucket
+
   Vpc:
     Description: VpcId of the ECSVPC for use in later templates
     Value: !Ref Vpc
     Export:
-      Name: !Sub "${AWS::StackName}-Vpc"
+      Name: !Sub ${AWS::StackName}-Vpc
+
   PrivateSubnet1:
     Description: SubnetId of the first Private Subnet
     Value: !Ref PriSubnet1
     Export:
-      Name: !Sub "${AWS::StackName}-PriSubnet1"
+      Name: !Sub ${AWS::StackName}-PriSubnet1
+
   PrivateSubnet2:
     Description: SubnetId of the second Private Subnet
     Value: !Ref PriSubnet2
     Export:
-      Name: !Sub "${AWS::StackName}-PriSubnet2"
+      Name: !Sub ${AWS::StackName}-PriSubnet2
+
   PubSubnet1:
     Description: SubnetId of the first Public Subnet
     Value: !Ref PubSubnet1
     Export:
-      Name: !Sub "${AWS::StackName}-PubSubnet1"
+      Name: !Sub ${AWS::StackName}-PubSubnet1
+
   PubSubnet2:
     Description: SubnetId of the second Public Subnet
     Value: !Ref PubSubnet2
     Export:
-      Name: !Sub "${AWS::StackName}-PubSubnet2"
+      Name: !Sub ${AWS::StackName}-PubSubnet2
+
   InstanceSecurityGroup:
     Description: Security Group for ECS Container Instances
     Value: !GetAtt InstanceSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}-InstanceSG"
+      Name: !Sub ${AWS::StackName}-InstanceSG
+
   EC2InstanceProfile:
     Description: EC2 Instance Profile for ECS Container Instances
     Value: !Ref EC2InstanceProfile
     Export:
-      Name: !Sub "${AWS::StackName}-EC2InstanceProfile"
+      Name: !Sub ${AWS::StackName}-EC2InstanceProfile
+
   LoadBalancerARN:
     Description: ARN of the Application Load Balancer for cats and dogs
     Value: !Ref catsndogsALB
     Export:
-      Name: !Sub "${AWS::StackName}-ALBARN"
+      Name: !Sub ${AWS::StackName}-ALBARN
+
   LoadBalancerFullName:
     Description: Application Load Balancer for cats and dogs
     Value: !GetAtt catsndogsALB.LoadBalancerFullName
     Export:
-      Name: !Sub "${AWS::StackName}-ALBFullName"
+      Name: !Sub ${AWS::StackName}-ALBFullName
+
   LoadBalancerDNSName:
     Description: Application Load Balancer for cats and dogs
     Value: !GetAtt catsndogsALB.DNSName
     Export:
-      Name: !Sub "${AWS::StackName}-ALBDNSName"
+      Name: !Sub ${AWS::StackName}-ALBDNSName
+
   LoadBalancerSecurityGroup:
     Description: Application Load Balancer Security Group
     Value: !GetAtt ELBSecurityGroup.GroupId
     Export:
-      Name: !Sub "${AWS::StackName}-ALBSecurityGroup"
+      Name: !Sub ${AWS::StackName}-ALBSecurityGroup
+
   ECSServiceRole:
     Description: ECS Service IAM Role
     Value: !Ref ECSServiceRole
     Export:
-      Name: !Sub "${AWS::StackName}-ECSServiceRole"
+      Name: !Sub ${AWS::StackName}-ECSServiceRole
+
+
