@@ -256,7 +256,7 @@ Resources:
               - ec2:Describe*
               - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
               - elasticloadbalancing:DeregisterTargets
-              - eelasticloadbalancing:Describe*
+              - elasticloadbalancing:Describe*
               - elasticloadbalancing:RegisterInstancesWithLoadBalancer
               - elasticloadbalancing:RegisterTargets
               - application-autoscaling:*
