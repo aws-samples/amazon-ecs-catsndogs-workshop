@@ -90,10 +90,8 @@ fleet instances with Auto Scaling enabled, an on-demand instance from an
 Auto Scaling group.
 
 1.  Create a new ECS cluster using Spot fleet
-
-    1.  Sign-in to the AWS management console and open the Amazon ECS console at [https://console.aws.amazon.com/ecs/](https://console.aws.amazon.com/ecs/).
-
-    2.  In the AWS Console, ensure you have the correct region selected. The instructor will tell you which region to use.
+    q.  Sign-in to the AWS management console and open the Amazon ECS console at [https://console.aws.amazon.com/ecs/](https://console.aws.amazon.com/ecs/).<br>
+    2.  In the AWS Console, ensure you have the correct region selected. The instructor will tell you which region to use.<br>
 
     3.  In the ECS console click **Clusters**, then click **Create Cluster.**
 
@@ -163,7 +161,7 @@ Auto Scaling group.
 
     <!-- -->
 
-1.0 Set up Auto Scaling for the Spot fleet
+1. Set up Auto Scaling for the Spot fleet
 
     In this task we will set up Auto Scaling for the Spot fleet, to provide cost-effective elasticity for the ECS Container Instances. Auto Scaling will use the ECS cluster MemoryReservation CloudWatch metric to scale the number of EC2 instances in the Spot fleet.
 

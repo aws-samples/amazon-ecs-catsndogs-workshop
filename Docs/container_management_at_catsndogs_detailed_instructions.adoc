@@ -50,6 +50,56 @@ This workshop requires:
 . Give the key pair a name and click Create. The console will generate a new key pair and download the private key. Keep this somewhere safe.
 . Deploy the initial CloudFormation template. This creates IAM roles, an S3 bucket, and other resources that you will use in later labs. The template is called Lab0-baseline-setup.yml. 
 
-In Stack name, enter catsndogssetup. Later labs will reference this stack by name, so if you choose a different stack name you will need to change the LabSetupStackName parameter in later labs.
+** In Stack name, enter *catsndogssetup*. Later labs will reference this stack by name, so if you choose a different stack name you will need to change the LabSetupStackName parameter in later labs.
 
 . Be sure to tick the I acknowledge that AWS CloudFormation might create IAM resources with custom names check box.
+
+== Task 1
+
+=== Cost management and EC2 scaling
+
+=== Overview
+
+The catsndogs.lol environment has been running on a spare laptop, but
+today you will move everything to a new AWS ECS cluster.
+
+Because the company is cost-conscious, the majority of our capacity will use EC2 Spot fleet instances. Because elasticity is also important, you will set up Auto Scaling for the Spot fleet to scale up and down as demand increases and decreases.
+
+For long-term stability of core capacity, you will also add a small
+group of on-demand EC2 instances to the cluster.
+
+At the end of this lab you will have an ECS cluster composed of Spot
+fleet instances with Auto Scaling enabled, an on-demand instance from an Auto Scaling group.
+
+=== 1.1 Create a new ECS cluster using Spot fleet
+. Sign-in to the AWS management console and open the Amazon ECS console at https://console.aws.amazon.com/ecs/
+. In the AWS Console, ensure you have the correct region selected. The instructor will tell you which region to use.
+. In the ECS console click Clusters, then click Create Cluster.
+. In Cluster name, type catsndogsECScluster as the cluster name. This name is used in later labs. If you name the cluster something else you will have to remember this when running later commands.
+. In Provisioning Model select Spot. 
+. Leave Spot Instance allocation strategy as Diversified.
+. In EC2 instance types add several different instance types and sizes. We recommend you pick smaller instances sizes, such as:
+**	m4.large
+**	c4.large
+**	r4.large
+**	i3.large
+
+    You can also pick older generation families such as m3.large
+
+. In **Maximum big price (per instance/hour)** you can click the **Spot prices** link to view the current spot prices for the instance types and sizes you have selected. More information on how EC2 Spot instance pricing works is available on the Amazon EC2 Spot Instances Pricing page: <https://aws.amazon.com/ec2/spot/pricing/>
+. Enter a maximum bid price. For the purposes of the workshop, $0.25 should offer an excellent chance of your Spot bid being fulfilled. It does not matter if your spot bid is not fulfilled. In a later step you will add an on-demand instance to the cluster.
+. In **Number of instances** enter **3.**
+. In **Key pair** select an existing EC2 Key pair for which you have the private key.
+. In **VPC** select **ECSVPC**.
+. In **Subnets** select all subnets containing the word **Private**.
+. In Security group, select the Security Group containing the term **InstanceSecurityGroup.**
+. In **Container Instance IAM role** select the IAM role containing the term **catsndogssetup-EC2Role.**
+. In **IAM role for a Spot Fleet request** select the role with a name containing **catsndogssetup-SpotFleetTaggingRole**.
+. Click **Create.**
+. You will see the cluster creation steps appear. The final step is the creation of a CloudFormation stack. Note the name of this stack.
+. Open the AWS console in a new browser tab and under **Management Tools**, click **CloudFormation.**
+. Select the checkbox for the CloudFormation stack, and click the **Template** tab.
+. The ECSSpotFleet resource has a Property named **LaunchSpecifications**, which contains **UserData**. This is about half way down the template.
+....
+Note:This script creates a Spot instance termination notice watcher script on each EC2 instance. That watcher script runs on each instance every two minutes. It polls the EC2 instance metadata service for a Spot termination notice. If the instance is scheduled for termination (because you have been outbid) the script sends a command to the ECS service to put itself into a DRAINING state. This prevents new tasks being scheduled on the instance, and if capacity is available in the cluster, ECS will start replacement tasks on other instances within the cluster.
+....
