@@ -5,6 +5,7 @@ Description: CloudFormation Template to deploy base resources for catsndogs.lol 
 
 
 Resources:
+  # Base VPC components
   Vpc:
     Properties:
       CidrBlock: 172.20.0.0/16
@@ -373,8 +374,7 @@ Resources:
         - arn:aws:iam::aws:policy/CloudWatchEventsFullAccess
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
       Path: /
-
-  # The CodeBuildServiceRole needs permissions to upload images to ECR as part of the build sequence.
+  
   CatsnDogsCloudFormationRole:
     Type: AWS::IAM::Role
     Properties:
@@ -406,6 +406,7 @@ Resources:
                   - ecs:ListTaskDefinitionFamilies
                   - ecs:DeregisterTaskDefinition
 
+  # The CodeBuildServiceRole needs permissions to upload images to ECR as part of the build sequence.                
   CatsnDogsBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -507,10 +508,30 @@ Resources:
                   -  cloudformation:ValidateTemplate
                   -  codebuild:BatchGetBuilds
                   -  codebuild:StartBuild
-              - Resource: !GetAtt CatsnDogsCloudFormationRole.Arn
+#              - Resource: !GetAtt CatsnDogsCloudFormationRole.Arn
+#                Effect: Allow
+#                Action:
+#                  -  iam:Passrole
+              - Resource: !GetAtt CatsnDogsCodeCommitRepo.Arn
                 Effect: Allow
                 Action:
-                  -  iam:Passrole
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:UploadArchive
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:CancelUploadArchive
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - ecs:* 
+  
+  # Additional base resources.                                            
+  CatsnDogsCodeCommitRepo:
+    Type: "AWS::CodeCommit::Repository"
+    Properties: 
+      RepositoryDescription: "Dogs application source code"
+      RepositoryName: DogsRepo                
+  
   catsndogsALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -547,8 +568,7 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: simplehomepage
-
-
+      
 Outputs:
 
   CodeUploadS3Bucket:
@@ -626,5 +646,11 @@ Outputs:
     Value: !Ref ECSServiceRole
     Export:
       Name: !Sub ${AWS::StackName}-ECSServiceRole
+      
+  catsndogsRep:
+    Description: HTTPS url for dogs repo.
+    Value: !GetAtt CatsnDogsCodeCommitRepo.CloneUrlHttp
+    Export:
+      Name: !Sub ${AWS::StackName}-CloneUrl
 
 
