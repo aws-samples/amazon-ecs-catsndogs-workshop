@@ -45,10 +45,13 @@ During the initial start-up of the Cloud9 IDE a number of steps will automatical
 
 5.	Copy the value of the LoadBalancerDNSName, created by the catsndogssetup CloudFormation stack that was deployed at the start of the workshop, in to you address bar of your web browser. The Dogs application page should appear with fancy new background color.
 
-The build process for the dogs Docker image uses the AWS CLI to copy the latest dog memes from an S3 bucket. Although the images are publicly readable, any S3 operation requires AWS credentials. In this case, the credentials from the build environment need to be passed through to the Docker build process, otherwise the build process will fail with “Unable to locate credentials”.
+The build process for the dogs container image uses the AWS CLI to copy the latest dog memes from an S3 bucket. Although the images are publicly readable, any S3 operation requires AWS credentials. In this case, the credentials from the build environment need to be passed through to the container image build process, otherwise the build process will fail with “Unable to locate credentials”.
 More details can be found here: http://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-versions
 
 **Extension activity:** Examine the buildspec.yml file in the CodeCommit repository, to understand the steps the CodeBuild project is taking to build and push the container image. How is the image tagged? How does the CodePipeline pipeline retrieve the tag, to use as a parameter when updating the CloudFormation stack?
 
 # What's Next
 [Advanced Deployment Techniques](../Lab-7-Artifacts/)
+
+# Detailed Instructions
+[Advanced Deployment Techniques - Detailed Instructions](./lab6-detailed-steps.md)
