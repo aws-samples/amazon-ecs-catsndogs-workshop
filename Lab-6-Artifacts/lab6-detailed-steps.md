@@ -39,7 +39,6 @@ chmod +x lab-ide-build.sh && \
 
 13.	The Cloud9 IDE is now configured.
 
-
 ## 6.2	Create an AWS CodePipeline pipeline
 
 In this step, you will create a new AWS CodePipeline pipeline that you will use to orchestrate the deployment the new version of the Dogs application to your Amazon ECS cluster.
@@ -64,15 +63,15 @@ In this step, you will create a new AWS CodePipeline pipeline that you will use 
 
 9.	Under **Environment: How to build**:
 
-    a.	In **Environment image**, choose **Use an image managed by AWS CodeBuild**.
+    1.	In **Environment image**, choose **Use an image managed by AWS CodeBuild**.
 
-    b.	In **Operating system**, choose **Ubuntu**.
+    2.	In **Operating system**, choose **Ubuntu**.
 
-    c.	In **Runtime**, choose **Docker**.
+    3.	In **Runtime**, choose **Docker**.
 
-    d.	In **Version**, choose **aws/codebuild/docker:17.09.0**.
+    4.	In **Version**, choose **aws/codebuild/docker:17.09.0**.
 
-    e.	In **Build specification**, choose **Use the buildspec.yml in the source code root directory**.
+    5.	In **Build specification**, choose **Use the buildspec.yml in the source code root directory**.
 
 **Note:** The buildspec.yml is one of the files that have been placed in the CodeCommit repository.
 
@@ -80,15 +79,15 @@ In this step, you will create a new AWS CodePipeline pipeline that you will use 
 
 11.	In **VPC**, for **VPC ID**, choose **No VPC**.
 
-12.	Expand Advanced:
+12.	Expand **Advanced**:
 
-    a.	In **Environment variables** add the following:
+    1.	In **Environment variables** add the following:
 
-        i.	**AWS_DEFAULT_REGION:** <your AWS region>
+        1.	**AWS_DEFAULT_REGION:** <your AWS region>
 
-        ii.	**AWS_ACCOUNT_ID:** <the account ID of your AWS account>
+        2.	**AWS_ACCOUNT_ID:** <the account ID of your AWS account>
 
-        iii.	**REPOSITORY_URI:** <URI of your dogs ECR repository> for example: 12345567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs
+        3.	**REPOSITORY_URI:** <URI of your dogs ECR repository> for example: 12345567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs
 
 **Note:** The URI of your dogs repository is listed in the ECS Console. Click on Repositories, then on the dogs repository.
 
@@ -136,19 +135,19 @@ The development team at catsndogs.lol would like you to deploy a new revision of
 
 9.	Commit the changes that have just been made t and push them to the remote repository by running the following commands:
 
-    a.	`git add index.html`
+    1.	`git add index.html`
 
-    b.	`git command -m ‘changing background color’`
+    2.	`git command -m ‘changing background color’`
 
-    c.	`git push`
+    3.	`git push`
 
 10.	Open the AWS management console, and open the **AWS CodePipeline** console at https://console.aws.amazon.com/codepipeline/.
 
 11.	To verify your pipeline ran successfully:
 
-    a.	From the **All Pipelines** table, click the **CatsnDogsPipeline**, to monitor the progress of your pipeline.
+    1.	From the **All Pipelines** table, click the **CatsnDogsPipeline**, to monitor the progress of your pipeline.
 
-    b.	The status of each stage should change from No executions yet to **In progress**, and then **Succeeded** or **Failed**. The pipeline should complete the first run within a few minutes.
+    2.	The status of each stage should change from No executions yet to **In progress**, and then **Succeeded** or **Failed**. The pipeline should complete the first run within a few minutes.
 
 12.	Copy the value of the **LoadBalancerDNSName**, created by the **catsndogssetup** CloudFormation stack that was deployed at the start of the workshop, in to you address bar of your web browser.
 
