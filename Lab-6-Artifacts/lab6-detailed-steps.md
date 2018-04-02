@@ -102,13 +102,13 @@ In this step, you will create a new AWS CodePipeline pipeline that you will use 
 
     2.	In **Amazon ECS**:
 
-      1.	For **Cluster name**, choose the cluster with **catsndogs** in the name.
+        1.	For **Cluster name**, choose the cluster with **catsndogs** in the name.
 
-      2.	For **Service name**, choose the service with **Dogs** in the name.
+        2.	For **Service name**, choose the service with **Dogs** in the name.
 
-      3.	For **Image filename**, enter **imagedefinitions.json**. This JSON file describes the service container name, image and tag.
+        3.	For **Image filename**, enter **imagedefinitions.json**. This JSON file describes the service container name, image and tag.
 
-      4.	Click **Next**.
+        4.	Click **Next**.
 
 16.	In **Step 5: Service Role**, in **Role name** choose the IAM role with **CatsnDogsPipeline** in the name and click **Next step**.
 
