@@ -158,3 +158,6 @@ The build process for the dogs container image uses the AWS CLI to copy the late
 ### Extension activity:
 
 Examine the buildspec.yml file in the CodeCommit repository, to understand the steps the CodeBuild project is taking to build and push the container image. How is the image tagged? How does the CodePipeline pipeline retrieve the tag, to use as a parameter when updating the ECS service?
+
+# What's Next
+[Advanced Deployment Techniques](../Lab-7-Artifacts/)
