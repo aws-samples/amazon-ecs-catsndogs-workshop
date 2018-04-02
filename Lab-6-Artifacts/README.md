@@ -20,7 +20,7 @@ You will use AWS CodePipeline to deploy the updates the existing ECS tasks and s
 
 During the initial start-up of the Cloud9 IDE a number of steps will automatically run to prepare the environment for first use. The steps include cloning an AWS CodeCommit repository in to the AWS Cloud9 IDE workspace.
 
-3.	Create a new CodePipeline pipeline. The Source should be the AWS CodeCommit repository that was automatically created as part of the initial workshop setup. In the Build step, create a new CodeBuild project. For the build environment, use an image managed by AWS CodeBuild. Use the Ubuntu Docker image version 17.09.0.
+3.	Create a new CodePipeline pipeline. The Source should be the AWS CodeCommit repository that was automatically created as part of the initial workshop setup. In the Build step, create a new CodeBuild project. For the build environment, use an image managed by AWS CodeBuild. Use the Ubuntu Docker image version *17.09.0*.
 
     1.	Use the role with CatsnDogsBuild in the name.
 
@@ -30,7 +30,7 @@ During the initial start-up of the Cloud9 IDE a number of steps will automatical
 
         2. **AWS_ACCOUNT_ID**: *<the account ID of your AWS account>*
 
-        3. **REPOSITORY_URI**: *<URI of your dogs ECR repository>* for example: `1234567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs`
+        3. **REPOSITORY_URI**: *<URI of your dogs ECR repository>* for example: `1234567891011.dkr.ecr.us-east-1.amazonaws.com/dogs`
 
     3.	Choose Amazon ECS for the Deployment provider, and configured the following values:
 
