@@ -30,9 +30,9 @@ During the initial start-up of the Cloud9 IDE a number of steps will automatical
 11.	At the command prompt run the following command to download and execute the IDE build and configuration script.
 
 ```
-aws s3 cp s3://catsndogs-artifacts/lab-ide-build.sh . && \
-chmod +x lab-ide-build.sh && \
-. ./lab-ide-build.sh
+wget https://raw.githubusercontent.com/aws-samples/amazon-ecs-catsndogs-workshop/master/scripts/ide-build-script.sh -O ~/environment/ide-build-script.sh . && \
+chmod +x ~/environment/ide-build-script.sh && \
+. ~/environment/ide-build-script.sh
 ```
 
 12.	When prompted, enter your **name**, and an **email address** to complete the configuration of the git client.

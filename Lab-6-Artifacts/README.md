@@ -13,9 +13,9 @@ You will use AWS CodePipeline to deploy the updates the existing ECS tasks and s
 2.  Launch the Cloud9 IDE and run the following command to complete the setup of the Cloud9 IDE environment. The launch URL for the Cloud9 IDE is an output of the stack which was just created. The output key is: `Cloud9IDE`
 
     ```
-    aws s3 cp s3://catsndogs-artifacts/lab-ide-build.sh . && \
-    chmod +x lab-ide-build.sh && \
-    . ./lab-ide-build.sh
+    awget https://raw.githubusercontent.com/aws-samples/amazon-ecs-catsndogs-workshop/master/scripts/ide-build-script.sh -O ~/environment/ide-build-script.sh . && \
+    chmod +x ~/environment/ide-build-script.sh && \
+    . ~/environment/ide-build-script.sh
     ```
 
 During the initial start-up of the Cloud9 IDE a number of steps will automatically run to prepare the environment for first use. The steps include cloning an AWS CodeCommit repository in to the AWS Cloud9 IDE workspace.
