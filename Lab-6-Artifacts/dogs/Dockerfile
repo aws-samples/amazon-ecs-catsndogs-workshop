@@ -11,5 +11,5 @@ RUN mkdir /www && \
     chown -R www:www /www
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./index.html /www/index.html
-#RUN aws --region us-west-2 s3 cp s3://catsndogs-assets/dogs-images /www/ --recursive
+RUN aws --region us-west-2 s3 cp s3://catsndogs-assets/dogs-images /www/ --recursive
 CMD nginx -g "daemon off;"
