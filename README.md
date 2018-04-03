@@ -16,6 +16,7 @@ This workshop requires:
 - An Internet browser such as Chrome, Firefox, Safari, or Edge.
 - An AWS account. You will create AWS resources including IAM roles during the workshop.
 - An EC2 key pair created in the AWS region you are working in.
+- This workshop can be run in any of the following AWS regions: US East (N. Virginia), US East (Ohio), US West (Oregon), Asia Pacific (Singapore) and EU (Ireland).
 
 ### Initial Setup
 1.	Clone this repository to your local workspace. This contains the CloudFormation templates and other materials you will need during the workshop.
