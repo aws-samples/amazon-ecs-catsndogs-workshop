@@ -39,3 +39,6 @@ For the sake of the cats, please investigate why this is happening, and implemen
 
 # What's Next
 [Clean up](../Lab-99-Clean-up/)
+
+# Detailed Instructions
+[Advanced Deployment Techniques - Detailed Instructions](./lab7-detailed-steps.md)

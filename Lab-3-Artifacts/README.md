@@ -31,3 +31,6 @@ In this lab, you will configure Parameter Store and deploy a new version of the 
 
 # What's Next
 [Running ECS tasks based on time and events](../Lab-4-Artifacts/)
+
+# Detailed Instructions
+[Deploying a new version of the cats service with secrets management - Detailed Instructions](./lab3-detailed-steps.md)

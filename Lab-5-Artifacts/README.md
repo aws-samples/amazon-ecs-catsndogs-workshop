@@ -40,3 +40,6 @@ One of the container instances should now have a custom attribute, and the cats 
 
 # What's Next
 [Automated Deployments](../Lab-6-Artifacts/)
+
+# Detailed Instructions
+[Machine Learning containers and placement constraints - Detailed Instructions](./lab5-detailed-steps.md)
