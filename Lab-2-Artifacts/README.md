@@ -38,3 +38,6 @@ You should now have ECS Services defined for cats and dogs, and seen how ECS tas
 
 # What's Next
 [Deploying a new version of the cats service with secrets management](../Lab-3-Artifacts/)
+
+# Detailed Instructions
+[ECS Service deployment and task Auto Scaling - Detailed Instructions](./lab2-detailed-steps.md)

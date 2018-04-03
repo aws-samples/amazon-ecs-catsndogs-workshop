@@ -31,3 +31,6 @@ http://catsn-catsn-123455678-abcdefgh.us-west-2.elb.amazonaws.com/cats/api/list-
 
 # What's Next
 [Machine Learning containers and placement constraints](../Lab-5-Artifacts/)
+
+# Detailed Instructions
+[Running ECS tasks based on time and events - Detailed Instructions](./lab4-detailed-steps.md)
