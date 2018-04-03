@@ -5,9 +5,10 @@ phases:
     commands:
       - echo -n "$CODEBUILD_BUILD_ID" | sed "s/.*:\([[:xdigit:]]\{7\}\).*/\1/" > /tmp/build_id.out
       - printf "%s:%s" "$REPOSITORY_URI" "$(cat /tmp/build_id.out)" > /tmp/build_tag.out
-      - printf '{"tag":"%s"}' "$(cat /tmp/build_id.out)" > /tmp/build.json
+      - ##printf '{"tag":"%s"}' "$(cat /tmp/build_id.out)" > imagedefinitions.json
+      - printf '[{"name":"dogs","imageUri":"%s"}]' "$(cat /tmp/build_tag.out)" > imagedefinitions.json
       - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
   build:
     commands:
       - echo Build started on `date`
@@ -20,5 +21,5 @@ phases:
       - docker push "$(cat /tmp/build_tag.out)"
 artifacts:
   files:
-    - /tmp/build.json
+    - imagedefinitions.json
   discard-paths: yes

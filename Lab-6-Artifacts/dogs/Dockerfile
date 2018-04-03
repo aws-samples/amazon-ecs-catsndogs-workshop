@@ -6,7 +6,7 @@ RUN mkdir -p /aws && \
 	pip install awscli && \
 	apk --purge -v del py-pip && \
 	rm /var/cache/apk/*
-RUN adduser -D -u 1000 -g 'www' www   
+RUN adduser -D -u 1000 -g 'www' www
 RUN mkdir /www && \
     chown -R www:www /www
 COPY ./nginx.conf /etc/nginx/nginx.conf
