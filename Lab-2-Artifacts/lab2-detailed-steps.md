@@ -35,25 +35,25 @@ setup, or named the ECS cluster something other than catsndogsECScluster.
 
 In this task you will set up Task Auto Scaling for the cats and dogs services
 
-1.	In the **Compute** section click **EC2 Container Service**.
+1. In the **Compute** section click **EC2 Container Service**.
 
-2.	In the ECS console click **catsndogsECScluster** then the service with Cats in the name.
+2. In the ECS console click **catsndogsECScluster** then the service with Cats in the name.
 
-3.	Click the **Update** button at the top right of the console.
+3. Click the **Update** button at the top right of the console.
 
-4.	On the **Configure Service** page click **Next Step**.
+4. On the **Configure Service** page click **Next Step**.
 
-5.	On the **Network configuration** page click **Next Step**.
+5. On the **Network configuration** page click **Next Step**.
 
-6.	On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
+6. On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
 
-7.	Set **Minimum number** of tasks to 2.
+7. Set **Minimum number** of tasks to 2.
 
-8.	Set **Desired number** of tasks to 2.
+8. Set **Desired number** of tasks to 2.
 
-9.	Set **Maximum number** of tasks to 100.
+9. Set **Maximum number** of tasks to 100.
 
-10.	In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
+10. In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
 
 11.	Click **Add scaling policy** button.
 
@@ -63,13 +63,13 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 14.	In **Scaling action** click the **Add** button.
 
-15.	Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
+    15.	Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
 
-16.	Enter: **Add 20 tasks** when **2000** <= RequestCount < **000**
+    16.	Enter: **Add 20 tasks** when **2000** <= RequestCount < **000**
 
-17.	Click the **Add** button again.
+    17.	Click the **Add** button again.
 
-18.	Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
+    18.	Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
 
 19.	Click **Save**.
 
@@ -81,9 +81,9 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 23.	In **Scaling action** click the **Add** button.
 
-24.	Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
+    24.	Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
 
-25.	Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
+    25.	Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
 
 26.	Click **Save**.
 
@@ -103,11 +103,11 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 34.	On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
 
-35.	Set **Minimum number of tasks** to 2.
+    35.	Set **Minimum number of tasks** to 2.
 
-36.	Set **Desired number of tasks** to 2.
+    36.	Set **Desired number of tasks** to 2.
 
-37.	Set **Maximum number of tasks** to 100.
+    37.	Set **Maximum number of tasks** to 100.
 
 38.	In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
 
@@ -119,25 +119,25 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 42.	In **Scaling action** click **Add** twice.
 
-43.	Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
+    43.	Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
 
-44.	Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
+    44.	Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
 
-45.	Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
+    45.	Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
 
 46.	Click **Save**.
 
 47.	Click **Add scaling policy** button.
 
-48.	In **Policy name** enter **ogsScaleDownPolicy**.
+48.	In **Policy name** enter **DogsScaleDownPolicy**.
 
 49.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **DogsScaleDownAlarm** in the name.
 
 50.	In **Scaling actionv click the **Add** button.
 
-51.	Enter: **Remove 10 tasksv when **1000** >= RequestCount > **100**
+    51.	Enter: **Remove 10 tasksv when **1000** >= RequestCount > **100**
 
-52.	Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
+    52.	Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
 
 53.	Click **Save**.
 
@@ -153,25 +153,25 @@ In this task, you will generate load to cause the cats and dogs services scale. 
 
 You will create a CloudFormation stack containing a load generator that sends load to the cats and dogs containers, and then verify the tasks scale as expected.
 
-1.	In the **Management Tools** section click **CloudFormation**.
+1. In the **Management Tools** section click **CloudFormation**.
 
-2.	Click **Create Stack**.
+2. Click **Create Stack**.
 
-3.	Select **Upload a template to Amazon S3**, then click Choose File and choose the file named **Lab2-loadgenerator.yml**.
+3. Select **Upload a template to Amazon S3**, then click Choose File and choose the file named **Lab2-loadgenerator.yml**.
 
-4.	In **Stack name**, enter **catsndogslab2loadgenerator**.
+4. In **Stack name**, enter **catsndogslab2loadgenerator**.
 
-5.	Leave the LabSetupStackName parameter at its default, unless you changed the name of the CloudFormation stack from the Lab setup.
+5. Leave the LabSetupStackName parameter at its default, unless you changed the name of the CloudFormation stack from the Lab setup.
 
-6.	Click **Next**, then click **Next** again, then click **Create**.
+6. Click **Next**, then click **Next** again, then click **Create**.
 
-7.	Wait until the stack status is **CREATE_COMPLETE**.
+7. Wait until the stack status is **CREATE_COMPLETE**.
 
 **Note:** the LoadGenerator instance uses the Vegeta load generator. More information about this is available at: https://github.com/tsenart/vegeta . The CloudFormation template injects the URL of your load balancer so Vegeta sends requests to the correct endpoint
 
-8.	In the AWS Console, under **Management Tools** click **CloudWatch**.
+8. In the AWS Console, under **Management Tools** click **CloudWatch**.
 
-9.	Click **Metrics**.
+9. Click **Metrics**.
 
 10.	On the **All metrics** tab, click **ApplicationELB**, then **Per AppELB, per AZ, per TG Metrics**.
 
@@ -198,23 +198,23 @@ You will create a CloudFormation stack containing a load generator that sends lo
 As more tasks are added to the cluster, the MemoryReservation metric will increase. Because the EC2 Spot fleet Auto Scaling is set up to scale based on MemoryReservation, this will cause the underlying EC2 Spot fleet to scale. In this task you will verify that Spot fleet Auto Scaling adds more EC2 instances to the cluster:
 
 
-1.	In the AWS Console, under **Management Tools** click **CloudWatch**.
+1. In the AWS Console, under **Management Tools** click **CloudWatch**.
 
-2.	Click **Alarms**.
+2. Click **Alarms**.
 
-3.	Once sufficient copies of the cats and dogs tasks have started, the ScaleOut alarm you created in Lab 1 should change to ALARM state. Click this alarm and view the metric graph to see whether it has reached the alarm threshold.
+3. Once sufficient copies of the cats and dogs tasks have started, the ScaleOut alarm you created in Lab 1 should change to ALARM state. Click this alarm and view the metric graph to see whether it has reached the alarm threshold.
 
-4.	Once it has reached the threshold and moved to ALARM state, move to the next step.
+4. Once it has reached the threshold and moved to ALARM state, move to the next step.
 
-5.	In the AWS Console, under **Compute** click **EC2**.
+5. In the AWS Console, under **Compute** click **EC2**.
 
-6.	Click **Spot Requests** then select the Spot fleet request.
+6. Click **Spot Requests** then select the Spot fleet request.
 
-7.	Click the **History** tab. You may see an **Event Type** of **autoScaling** with a **Status** of **pending**, otherwise you should see **Event Type** entries of **instanceChange** with a **Status** of **launched**.
+7. Click the **History** tab. You may see an **Event Type** of **autoScaling** with a **Status** of **pending**, otherwise you should see **Event Type** entries of **instanceChange** with a **Status** of **launched**.
 
-8.	In the AWS Console under the Compute section click EC2 Container Service.
+8. In the AWS Console under the Compute section click EC2 Container Service.
 
-9.	In the ECS console click **catsndogsECScluster**.
+9. In the ECS console click **catsndogsECScluster**.
 
 10.	Click the **ECS Instances** tab.
 
@@ -224,14 +224,13 @@ As more tasks are added to the cluster, the MemoryReservation metric will increa
 
 In this task, you will stop the load generator. As the load stops, the number of ECS tasks and number of instances in the Spot fleet will return to their default levels.
 
-1.	In the AWS Console, under **Compute** click **EC2**.
+1. In the AWS Console, under **Compute** click **EC2**.
 
-2.	Click **Instances**.
+2. Click **Instances**.
 
-3.	Select the instance with **LoadGenerator** in the name.
+3. Select the instance with **LoadGenerator** in the name.
 
-4.	Click **Actions** and select **Instance State**, then click **Stop**.
-
+4. Click **Actions** and select **Instance State**, then click **Stop**.
 
 # What's Next
 [Deploying a new version of the cats service with secrets management](../Lab-3-Artifacts/)
