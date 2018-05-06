@@ -55,4 +55,4 @@ More details can be found here: http://docs.aws.amazon.com/codebuild/latest/user
 [Advanced Deployment Techniques](../Lab-7-Artifacts/)
 
 # Detailed Instructions
-[Advanced Deployment Techniques - Detailed Instructions](./lab6-detailed-steps.md)
+[Automated Deployments - Detailed Instructions](./lab6-detailed-steps.md)
