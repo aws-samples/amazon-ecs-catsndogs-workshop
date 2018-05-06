@@ -47,11 +47,11 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 6. On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
 
-7. Set **Minimum number** of tasks to 2.
+    1. Set **Minimum number** of tasks to 2.
 
-8. Set **Desired number** of tasks to 2.
+    2. Set **Desired number** of tasks to 2.
 
-9. Set **Maximum number** of tasks to 100.
+    3. Set **Maximum number** of tasks to 100.
 
 10. In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
 
@@ -63,13 +63,13 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 14.	In **Scaling action** click the **Add** button.
 
-    15.	Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
+    1. Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
 
-    16.	Enter: **Add 20 tasks** when **2000** <= RequestCount < **000**
+    2. Enter: **Add 20 tasks** when **2000** <= RequestCount < **000**
 
-    17.	Click the **Add** button again.
+    3. Click the **Add** button again.
 
-    18.	Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
+    4. Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
 
 19.	Click **Save**.
 
@@ -81,9 +81,9 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 23.	In **Scaling action** click the **Add** button.
 
-    24.	Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
+    1. Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
 
-    25.	Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
+    2. Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
 
 26.	Click **Save**.
 
@@ -103,11 +103,11 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 34.	On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
 
-    35.	Set **Minimum number of tasks** to 2.
+    1. Set **Minimum number of tasks** to 2.
 
-    36.	Set **Desired number of tasks** to 2.
+    2. Set **Desired number of tasks** to 2.
 
-    37.	Set **Maximum number of tasks** to 100.
+    3. Set **Maximum number of tasks** to 100.
 
 38.	In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
 
@@ -119,11 +119,11 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 42.	In **Scaling action** click **Add** twice.
 
-    43.	Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
+    1. Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
 
-    44.	Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
+    2. Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
 
-    45.	Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
+    3. Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
 
 46.	Click **Save**.
 
@@ -135,9 +135,9 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 50.	In **Scaling actionv click the **Add** button.
 
-    51.	Enter: **Remove 10 tasksv when **1000** >= RequestCount > **100**
+    1. Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
 
-    52.	Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
+    2. Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
 
 53.	Click **Save**.
 
