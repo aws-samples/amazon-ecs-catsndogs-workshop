@@ -215,4 +215,5 @@ echo ECS_CLUSTER=catsndogsECScluster >> /etc/ecs/ecs.config
 
 You should now have an ECS cluster composed of three instances from the Spot fleet request, and one instance from the on-demand Auto Scaling group.
 
-https://github.com/aws-samples/amazon-ecs-catsndogs-workshop/issues/7 
+# What's Next
+[ECS Service deployment and task Auto Scaling](../Lab-2-Artifacts/)
