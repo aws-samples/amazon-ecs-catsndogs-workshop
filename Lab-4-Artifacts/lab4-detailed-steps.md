@@ -138,5 +138,5 @@ The ImageAssessor can also reset all of the cats image if the following environm
 17. Verify the cats pictures have been reset by querying the cats API. Replace the host in the example below with the URL of your load balancer:
 http://catsn-catsn-123455678-abcdefgh.us-west-2.elb.amazonaws.com/cats/api/list-pictures/
 
-
-https://github.com/aws-samples/amazon-ecs-catsndogs-workshop/issues/10
+# What's Next
+[Machine Learning containers and placement constraints](../Lab-5-Artifacts/)
