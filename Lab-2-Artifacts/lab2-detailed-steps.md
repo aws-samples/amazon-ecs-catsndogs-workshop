@@ -133,7 +133,7 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
 49.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **DogsScaleDownAlarm** in the name.
 
-50.	In **Scaling actionv click the **Add** button.
+50.	In **Scaling action** click the **Add** button.
 
     1. Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
 
