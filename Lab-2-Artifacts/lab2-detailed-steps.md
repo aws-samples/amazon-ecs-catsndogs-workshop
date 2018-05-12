@@ -65,7 +65,7 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
     1. Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
 
-    2. Enter: **Add 20 tasks** when **2000** <= RequestCount < **000**
+    2. Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
 
     3. Click the **Add** button again.
 
