@@ -39,6 +39,15 @@ chmod +x ~/environment/ide-build-script.sh && \
 
 13.	The Cloud9 IDE is now configured.
 
+14. At the command prompt, create the initial commit and push the master branch:
+
+```
+cd ~/environment/dogs
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+```
+
 ## 6.2	Create an AWS CodePipeline pipeline
 
 In this step, you will create a new AWS CodePipeline pipeline that you will use to orchestrate the deployment the new version of the Dogs application to your Amazon ECS cluster.
