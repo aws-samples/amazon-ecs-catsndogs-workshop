@@ -6,7 +6,7 @@
 
 2.	In the AWS Console, ensure you have the correct region selected. The instructor will tell you which region to use.
 
-3.	In the ECS console click **Clusters**, then click **Create Cluster**.
+3.	In the ECS console click **Clusters**, then click **Create Cluster**. Select **EC2 Linux + Networking** then hit **Next Step**
 
 4.	In Cluster name, type **catsndogsECScluster** as the cluster name. This name is used in later labs. If you name the cluster something else you will have to remember this when running later commands.
 
@@ -52,7 +52,7 @@
 
 20.	Select the checkbox for the CloudFormation stack, and click the **Template** tab.
 
-21.	The ECSSpotFleet resource has a Property named **LaunchSpecifications**, which contains **UserData**. This is about half way down the template.
+21.	The ECSSpotFleet resource has a Property named **LaunchSpecifications**, which contains **UserData**. This is about half way down the template. This UserData creates a termination watcher script described below. You will not be able to see the contents directly from the CloudFormation console.
 
 **Note:** This script creates a Spot instance termination notice watcher script on each EC2 instance. That watcher script runs on each instance every two minutes. It polls the EC2 instance metadata service for a Spot termination notice. If the instance is scheduled for termination (because you have been outbid) the script sends a command to the ECS service to put itself into a DRAINING state. This prevents new tasks being scheduled on the instance, and if capacity is available in the cluster, ECS will start replacement tasks on other instances within the cluster.
 
@@ -78,7 +78,7 @@ In this task we will set up Auto Scaling for the Spot fleet, to provide cost-eff
 
     1. Is: **>= 20**
     
-    2. For: **2** consecutive period(s)
+    2. For: **2** out of 2 datapoints
 
 7.	For the **Period** select **1 minute**.
 
@@ -100,7 +100,7 @@ In this task we will set up Auto Scaling for the Spot fleet, to provide cost-eff
 
     1. Is: **<= 20**
     
-    2. For: **2** consecutive period(s)
+    2. For: **2** out of 2 datapoints
     
 16.	For the **Period** select **1 minute**.
 
