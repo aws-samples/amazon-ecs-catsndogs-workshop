@@ -53,71 +53,15 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
     3. Set **Maximum number** of tasks to 100.
 
-10. In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
+7. In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
 
-11.	Click **Add scaling policy** button.
+8.	Click **Add scaling policy** button. Select **Step scaling** radio button for **Scaling policy type**
 
-12.	In **Policy name** enter **CatsScaleUpPolicy**.
+9.	In **Policy name** enter **CatsScaleUpPolicy**.
 
-13.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **CatsScaleUpAlarm** in the name.
+10.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **CatsScaleUpAlarm** in the name.
 
-14.	In **Scaling action** click the **Add** button.
-
-    1. Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
-
-    2. Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
-
-    3. Click the **Add** button again.
-
-    4. Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
-
-19.	Click **Save**.
-
-20.	Click **Add scaling policy** button.
-
-21.	In **Policy name** enter **CatsScaleDownPolicy**.
-
-22.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **CatsScaleDownAlarm** in the name.
-
-23.	In **Scaling action** click the **Add** button.
-
-    1. Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
-
-    2. Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
-
-26.	Click **Save**.
-
-27.	Click **Next step**.
-
-28.	Click **Update Service**.
-
-29.	Click **View Service**, then click the cluster name **catsndogsECScluster**.
-
-30.	Click the service with **Dogs** in the name.
-
-31.	Click the **Update** button at the top right of the console.
-
-32.	On the **Configure Service** page click **Next Step**.
-
-33.	On the **Network configuration** page click **Next Step**.
-
-34.	On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
-
-    1. Set **Minimum number of tasks** to 2.
-
-    2. Set **Desired number of tasks** to 2.
-
-    3. Set **Maximum number of tasks** to 100.
-
-38.	In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
-
-39.	Click **Add scaling policy** button.
-
-40.	In **Policy name** enter **DogsScaleUpPolicy**.
-
-41.	In **Execute policy when** select Use an existing alarm and choose the **DogsScaleUpAlarm**.
-
-42.	In **Scaling action** click **Add** twice.
+11.	In **Scaling action** click the **Add** button twice.
 
     1. Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
 
@@ -125,27 +69,81 @@ In this task you will set up Task Auto Scaling for the cats and dogs services
 
     3. Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
 
-46.	Click **Save**.
+12.	Click **Save**.
 
-47.	Click **Add scaling policy** button.
+13.	Click **Add scaling policy** button. Select **Step scaling** radio button for **Scaling policy type**
 
-48.	In **Policy name** enter **DogsScaleDownPolicy**.
+14.	In **Policy name** enter **CatsScaleDownPolicy**.
 
-49.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **DogsScaleDownAlarm** in the name.
+15.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **CatsScaleDownAlarm** in the name.
 
-50.	In **Scaling action** click the **Add** button.
+16.	In **Scaling action** click the **Add** button.
 
     1. Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
 
     2. Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
 
-53.	Click **Save**.
+17.	Click **Save**.
 
-54.	Click **Next step**.
+18.	Click **Next step**.
 
-55.	Click **Update Service**.
+19.	Click **Update Service**.
 
-56.	Click **View Service**, then click the cluster name **catsndogsECScluster**.
+20.	Click **View Service**, then click the cluster name **catsndogsECScluster**.
+
+21.	Click the service with **Dogs** in the name.
+
+22.	Click the **Update** button at the top right of the console.
+
+23.	On the **Configure Service** page click **Next Step**.
+
+24.	On the **Network configuration** page click **Next Step**.
+
+25.	On the Auto Scaling page select **Configure Service Auto Scaling to adjust your service’s desired count**.
+
+    1. Set **Minimum number of tasks** to 2.
+
+    2. Set **Desired number of tasks** to 2.
+
+    3. Set **Maximum number of tasks** to 100.
+
+26.	In **IAM role for Service Auto Scaling** select the role with **ECSAutoScaleRole** in the name.
+
+27.	Click **Add scaling policy** button.
+
+28.	In **Policy name** enter **DogsScaleUpPolicy**. Select **Step scaling** radio button for **Scaling policy type**
+
+29.	In **Execute policy when** select Use an existing alarm and choose the **DogsScaleUpAlarm**.
+
+30.	In **Scaling action** click **Add** twice.
+
+    1. Enter: **Add 10 tasks** when **1000** <= RequestCount < **2000**
+
+    2. Enter: **Add 20 tasks** when **2000** <= RequestCount < **4000**
+
+    3. Enter: **Add 25 tasks** when **4000** <= RequestCount < +infinity
+
+31.	Click **Save**.
+
+32.	Click **Add scaling policy** button.
+
+33.	In **Policy name** enter **DogsScaleDownPolicy**. Select **Step scaling** radio button for **Scaling policy type**
+
+34.	In **Execute policy when** select **Use an existing alarm** and choose the alarm with **DogsScaleDownAlarm** in the name.
+
+35.	In **Scaling action** click the **Add** button.
+
+    1. Enter: **Remove 10 tasks** when **1000** >= RequestCount > **100**
+
+    2. Enter: **Remove 5 tasks** when **100** >= RequestCount > -infinity
+
+36.	Click **Save**.
+
+37.	Click **Next step**.
+
+38.	Click **Update Service**.
+
+39.	Click **View Service**, then click the cluster name **catsndogsECScluster**.
 
 ## 2.3	Generate load and validate Task Auto Scaling works as expected
 
