@@ -1,0 +1,519 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: catsndogs.lol workshop lab7. Creates lambda functions to drive blue-green, canary deployment
+Parameters:
+  ArtifactBucket:
+    Type: String
+    Default: "catsndogs-artifacts"
+    Description: "DO NOT CHANGE. Central S3 bucket containing source images for the cats and dogs containers"
+  NewContainerName:
+    Type: String
+    Default: "cats-green"
+  LabSetupStackName:
+    Type: String
+    Description: "Name of the stack created at the very start of the workshop"
+    Default: catsndogssetup
+  ECSCluster:
+    Type: String
+    Description: "Name of the ECS cluster you created earlier"
+    Default: catsndogsECScluster
+  DogTag:
+    Type: String
+    Description: "DO NOT CHANGE. Image tag for the dogs container"
+    Default: v1
+  ImageRepo:
+    Type: String
+    Description: "DO NOT CHANGE. Central repository URI for the cats and dogs containers"
+    Default: 205094881157.dkr.ecr.us-west-2.amazonaws.com
+Resources:
+  CatsnDogsHandleECSEvents:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: !Join [ '-', [ !Ref 'ArtifactBucket', !Ref 'AWS::Region' ] ]
+        S3Key: handleECSEvents.zip
+      Description: Lambda function for processing ECS events and starting the blue-green step function state machine
+      Environment:
+        Variables:
+          TRIGGER_CONTAINERS: 'cats-green'
+          STEP_FUNCTION: 'placeholder'
+          REGION: !Ref AWS::Region
+      Handler: index.lambda_handler
+      Role: !GetAtt HandleECSEventsExecutionRole.Arn
+      Runtime: python2.7
+      Tags:
+        - Key: Project
+          Value: catsndogs.lol
+  CatsnDogsupdateRoute53:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: !Join ['-',[!Ref 'ArtifactBucket',!Ref 'AWS::Region']]
+        S3Key: changeRoute53Weights.zip
+      Description: Lambda function for changing Route 53 record set weights.
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt StepFunctionsExecutionRole.Arn
+      Runtime: python3.6
+      Tags:
+        - Key: Project
+          Value: catsndogs.lol
+  CatsnDogscheckHealth:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: !Join ['-',[!Ref 'ArtifactBucket',!Ref 'AWS::Region']]
+        S3Key: checkGreenHealth.zip
+      Description: Lambda function for checking the health of the newly deployed stack
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt StepFunctionsExecutionRole.Arn
+      Runtime: python3.6
+      Tags:
+        - Key: Project
+          Value: catsndogs.lol
+  HandleECSEventsExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      - arn:aws:iam::aws:policy/AWSLambdaFullAccess
+      - arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess
+      Path: "/"
+  StepFunctionsExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: arn:aws:logs:*:*:*
+                Effect: Allow
+                Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                - dynamodb:*
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                - route53:*
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                - elasticloadbalancing:Describe*
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
+        - arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess
+      Path: "/"
+  InitFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: !Sub |
+          import json
+          import cfnresponse
+          import boto3
+
+          dynamodb = boto3.resource('dynamodb', region_name='${AWS::Region}')
+
+          def handler(event, context):
+            tableName = event['ResourceProperties']['DynamoTableName']
+            newcontainername = event['ResourceProperties']['NewContainerName']
+            oldlb = event['ResourceProperties']['OldLB']
+            newlb = event['ResourceProperties']['NewLB']
+            hostedzone = event['ResourceProperties']['HostedZoneID']
+            lbzoneid = event['ResourceProperties']['LBZoneID']
+            dnsname = event['ResourceProperties']['DNSName']
+            dnsname = dnsname[:-1]
+            targetgroup = event['ResourceProperties']['TargetGroup']
+
+            table = dynamodb.Table(tableName)
+            response = table.put_item(
+              Item={
+                'NewContainerName': newcontainername,
+                'Triggered' : False,
+                'RecordName': dnsname,
+                'OldLB' : oldlb,
+                'NewLB' : newlb,
+                'HostedZoneID': hostedzone,
+                'LBZoneID': lbzoneid,
+                'TargetGroup': targetgroup
+                })
+            responseData = {}
+            responseData['Data'] = response
+            cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+            return
+      Handler: index.handler
+      Role:
+        Fn::GetAtt: [ StepFunctionsExecutionRole , "Arn" ]
+      Runtime: python3.6
+      Timeout: 5
+  DynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "CanaryTable"
+      AttributeDefinitions:
+        - AttributeName: "NewContainerName"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "NewContainerName"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  InitializeDynamoDB:
+    Type: Custom::InitFunction
+    DependsOn: DynamoDB
+    Properties:
+      ServiceToken:
+         Fn::GetAtt: [ InitFunction , "Arn" ]
+      DynamoTableName: !Ref DynamoDB
+      DNSName: www.catsndogs.lol.
+      OldLB:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-ALBDNSName"
+      NewLB: !GetAtt catsndogsALB.DNSName
+      NewContainerName: 'cats-green'
+      HostedZoneID: !Ref catsndogHostedZone
+      LBZoneID: !GetAtt catsndogsALB.CanonicalHostedZoneID
+      TargetGroup: !Ref DogsALBTargetGroup
+  catsndogHostedZone:
+    Type: "AWS::Route53::HostedZone"
+    Properties:
+      Name: catsndogs.lol
+  catsndogRecordSetGreen:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Type: A
+      Name: www.catsndogs.lol.
+      AliasTarget:
+        DNSName: !GetAtt catsndogsALB.DNSName
+        HostedZoneId: !GetAtt catsndogsALB.CanonicalHostedZoneID
+      SetIdentifier: green
+      Weight: 0
+      HostedZoneId: !Ref catsndogHostedZone
+  catsndogRecordSetBlue:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Type: A
+      Name: www.catsndogs.lol.
+      AliasTarget:
+        DNSName:
+            Fn::ImportValue:
+              !Sub "${LabSetupStackName}-ALBDNSName"
+        HostedZoneId: !GetAtt catsndogsALB.CanonicalHostedZoneID
+      SetIdentifier: blue
+      Weight: 100
+      HostedZoneId: !Ref catsndogHostedZone
+  # New Service
+  CatsTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: 'cats-green'
+      ContainerDefinitions:
+        - Name: 'cats-green'
+          Cpu: '50'
+          Image: 205094881157.dkr.ecr.us-west-2.amazonaws.com/cats:v3
+          Memory: 1024
+          MemoryReservation: 384
+          Essential: true
+          PortMappings:
+            - ContainerPort: 80
+          Environment:
+            - Name: Tag
+              Value: 'v3'
+  DogsTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: 'dogs-green'
+      ContainerDefinitions:
+        - Name: 'dogs-green'
+          Cpu: '50'
+          Image: !Sub ${ImageRepo}/dogs:${DogTag}
+          Memory: 1024
+          MemoryReservation: 384
+          Essential: true
+          PortMappings:
+            - ContainerPort: 80
+          Environment:
+            - Name: Tag
+              Value: 'v1'
+  SimpleHomePageTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: 'simplehomepage-green'
+      ContainerDefinitions:
+        - Name: 'simplehomepage-green'
+          Cpu: '50'
+          Image: 205094881157.dkr.ecr.us-west-2.amazonaws.com/simplehomepage:latest
+          Memory: 300
+          MemoryReservation: 256
+          Essential: true
+          PortMappings:
+            - ContainerPort: 80
+          Environment:
+            - Name: Tag
+              Value: 'latest'
+  CatsServiceDefinition:
+    Type: AWS::ECS::Service
+    DependsOn: CatsListenerRule
+    Properties:
+      Cluster: !Ref ECSCluster
+      Role:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-ECSServiceRole"
+      DesiredCount: 0
+      TaskDefinition: !Ref CatsTaskDefinition
+      LoadBalancers:
+        - ContainerName: 'cats-green'
+          ContainerPort: 80
+          TargetGroupArn: !Ref CatsALBTargetGroup
+  DogsServiceDefinition:
+    DependsOn: DogsListenerRule
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      Role:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-ECSServiceRole"
+      DesiredCount: 2
+      TaskDefinition: !Ref DogsTaskDefinition
+      LoadBalancers:
+        - ContainerName: 'dogs-green'
+          ContainerPort: 80
+          TargetGroupArn: !Ref DogsALBTargetGroup
+  SimpleHomePageServiceDefinition:
+    Type: AWS::ECS::Service
+    DependsOn: LoadBalancerListener
+    Properties:
+      Cluster: !Ref ECSCluster
+      Role:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-ECSServiceRole"
+      DesiredCount: 2
+      TaskDefinition: !Ref SimpleHomePageTaskDefinition
+      LoadBalancers:
+        - ContainerName: 'simplehomepage-green'
+          ContainerPort: 80
+          TargetGroupArn: !Ref SimpleHomePageALBTargetGroup
+  CatsScaleDownAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale in containers if ALB RequestCount SUM metric < 100
+      MetricName: RequestCount
+      Namespace: AWS/ApplicationELB
+      EvaluationPeriods: '2'
+      Period: '60'
+      Statistic: Sum
+      Threshold: '1000'
+      ComparisonOperator: LessThanOrEqualToThreshold
+      Dimensions:
+      - Name: LoadBalancer
+        Value:
+          Fn::ImportValue:
+            !Sub "${LabSetupStackName}-ALBFullName"
+      - Name: TargetGroup
+        Value: !GetAtt [CatsALBTargetGroup, TargetGroupFullName]
+  DogsScaleDownAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale in containers if ALB RequestCount SUM metric < 100
+      MetricName: RequestCount
+      Namespace: AWS/ApplicationELB
+      EvaluationPeriods: '2'
+      Period: '60'
+      Statistic: Sum
+      Threshold: '1000'
+      ComparisonOperator: LessThanOrEqualToThreshold
+      Dimensions:
+      - Name: LoadBalancer
+        Value:
+          Fn::ImportValue:
+            !Sub "${LabSetupStackName}-ALBFullName"
+      - Name: TargetGroup
+        Value: !GetAtt [DogsALBTargetGroup, TargetGroupFullName]
+  CatsScaleUpAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale out containers if ALB RequestCount SUM metric > 1000
+      MetricName: RequestCount
+      Namespace: AWS/ApplicationELB
+      EvaluationPeriods: '2'
+      Period: '60'
+      Statistic: Sum
+      Threshold: '1000'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+      - Name: LoadBalancer
+        Value:
+          Fn::ImportValue:
+            !Sub "${LabSetupStackName}-ALBFullName"
+      - Name: TargetGroup
+        Value: !GetAtt [CatsALBTargetGroup, TargetGroupFullName]
+  DogsScaleUpAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Scale out containers if ALB RequestCount SUM metric > 1000
+      MetricName: RequestCount
+      Namespace: AWS/ApplicationELB
+      EvaluationPeriods: '2'
+      Period: '60'
+      Statistic: Sum
+      Threshold: '1000'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+      - Name: LoadBalancer
+        Value:
+          Fn::ImportValue:
+            !Sub "${LabSetupStackName}-ALBFullName"
+      - Name: TargetGroup
+        Value: !GetAtt [DogsALBTargetGroup, TargetGroupFullName]
+  CatsALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-Vpc"
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+  DogsALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-Vpc"
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+  SimpleHomePageALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-Vpc"
+      Port: 80
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 30
+  CatsListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref LoadBalancerListener
+      Priority: 1
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - /cats*
+      Actions:
+        - TargetGroupArn: !Ref CatsALBTargetGroup
+          Type: forward
+  DogsListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref LoadBalancerListener
+      Priority: 2
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - /dogs*
+      Actions:
+        - TargetGroupArn: !Ref DogsALBTargetGroup
+          Type: forward
+
+  #LoadbalancerGreen
+  catsndogsALB:
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    Properties:
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: '50'
+      Scheme: internet-facing
+      SecurityGroups:
+        - Fn::ImportValue: !Sub "${LabSetupStackName}-ALBSecurityGroup"
+      Subnets:
+        - Fn::ImportValue: !Sub "${LabSetupStackName}-PubSubnet1"
+        - Fn::ImportValue: !Sub "${LabSetupStackName}-PubSubnet2"
+      Tags:
+        - Key: Name
+          Value: catsndogsALB
+  ELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP/S to the load balancer
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${LabSetupStackName}-Vpc"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '443'
+        ToPort: '443'
+        CidrIp: 0.0.0.0/0
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref catsndogsALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref SimpleHomePageALBTargetGroup

@@ -1,0 +1,784 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: CloudFormation Template to deploy base resources for catsndogs.lol workshop - EKS Edition.
+
+Parameters:
+
+  KeyName:
+    Description: The EC2 Key Pair to allow SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+
+Mappings: 
+  RegionMap: 
+    us-east-1: 
+      "32": "ami-dea4d5a1"
+    us-west-2: 
+      "32": "ami-73a6e20b"
+
+Resources:
+  # Base VPC components
+  Vpc:
+    Properties:
+      CidrBlock: 172.20.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value: EKSVPC
+      - Key: Network
+        Value: Private
+    Type: AWS::EC2::VPC
+
+  PriSubnet1:
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 0, !GetAZs '']
+      CidrBlock: 172.20.1.0/24
+      Tags:
+      - Key: Name
+        Value: ECS Private Subnet 1
+      - Key: Network
+        Value: Private
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Role
+        Value: ECS Private Subnet Availability Zone 1
+    Type: AWS::EC2::Subnet
+
+  PriSubnet2:
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: 172.20.2.0/24
+      Tags:
+      - Key: Name
+        Value: ECS Private Subnet 2
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Private
+      - Key: Role
+        Value: ECS Private Subnet Availability Zone 2
+    Type: AWS::EC2::Subnet
+
+  PriSubnet3:
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
+      CidrBlock: 172.20.3.0/24
+      Tags:
+      - Key: Name
+        Value: ECS Private Subnet 3
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Private
+      - Key: Role
+        Value: ECS Private Subnet Availability Zone 2
+    Type: AWS::EC2::Subnet
+
+  PubSubnet1:
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 172.20.4.0/24
+      Tags:
+      - Key: Name
+        Value: ECS Public Subnet 1
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Public
+      - Key: Role
+        Value: ECS Public Subnet Availability Zone 1
+      - Key: !Sub "kubernetes.io/cluster/${CatsnDogsEKSCluster}"
+        Value: "owned"
+      - Key: "kubernetes.io/role/elb"
+        Value: ""  
+    Type: AWS::EC2::Subnet
+
+  PubSubnet2:
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      CidrBlock: 172.20.5.0/24
+      Tags:
+      - Key: Name
+        Value: ECS Public Subnet 2
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Public
+      - Key: Role
+        Value: ECS Public Subnet Availability Zone 2
+      - Key: !Sub "kubernetes.io/cluster/${CatsnDogsEKSCluster}"
+        Value: "owned"
+      - Key: "kubernetes.io/role/elb"
+        Value: ""  
+    Type: AWS::EC2::Subnet
+
+  PubSubnet3:
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [ 2, !GetAZs '' ]
+      CidrBlock: 172.20.6.0/24
+      Tags:
+      - Key: Name
+        Value: ECS Public Subnet 3
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Public
+      - Key: Role
+        Value: ECS Public Subnet Availability Zone 3
+      - Key: !Sub "kubernetes.io/cluster/${CatsnDogsEKSCluster}"
+        Value: "owned"
+      - Key: "kubernetes.io/role/elb"
+        Value: ""
+    Type: AWS::EC2::Subnet
+
+  InternetGateway:
+    Properties:
+      Tags:
+      - Key: Name
+        Value: ECSInternetGateway
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Public
+    Type: AWS::EC2::InternetGateway
+
+  GatewayToInternet:
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+    Type: AWS::EC2::VPCGatewayAttachment
+
+  PublicRouteTable:
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+      - Key: Name
+        Value: ECSPublicRouteTable
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Public
+    Type: AWS::EC2::RouteTable
+
+  PublicRoute:
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+    Type: AWS::EC2::Route
+
+  PubSubnet1RTAssoc:
+    Properties:
+      SubnetId: !Ref PubSubnet1
+      RouteTableId: !Ref PublicRouteTable
+    Type: AWS::EC2::SubnetRouteTableAssociation
+
+  PubSubnet2RTAssoc:
+    Properties:
+      SubnetId: !Ref PubSubnet2
+      RouteTableId: !Ref PublicRouteTable
+    Type: AWS::EC2::SubnetRouteTableAssociation
+
+  PubSubnet3RTAssoc:
+    Properties:
+      SubnetId: !Ref PubSubnet3
+      RouteTableId: !Ref PublicRouteTable
+    Type: AWS::EC2::SubnetRouteTableAssociation
+
+  PrivateRouteTable1:
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+      - Key: Name
+        Value: ECSPrivateRouteTable1
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Private
+    Type: AWS::EC2::RouteTable
+
+  PrivateRouteTable2:
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+      - Key: Name
+        Value: ECSPrivateRouteTable2
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Private
+    Type: AWS::EC2::RouteTable
+
+  PrivateRouteTable3:
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+      - Key: Name
+        Value: ECSPrivateRouteTable3
+      - Key: Application
+        Value: !Ref AWS::StackName
+      - Key: Network
+        Value: Private
+    Type: AWS::EC2::RouteTable
+
+  NATGateway1EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: Vpc
+
+  NATGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NATGateway1EIP.AllocationId
+      SubnetId: !Ref PubSubnet1
+
+  PrivateRoute1:
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway1
+    Type: AWS::EC2::Route
+
+  PrivateRoute2:
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway1
+    Type: AWS::EC2::Route
+
+  PrivateRoute3:
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable3
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway1
+    Type: AWS::EC2::Route 
+
+  PriSubnet1RTAssoc:
+    Properties:
+      SubnetId: !Ref PriSubnet1
+      RouteTableId: !Ref PrivateRouteTable1
+    Type: AWS::EC2::SubnetRouteTableAssociation
+
+  PriSubnet2RTAssoc:
+    Properties:
+      SubnetId: !Ref PriSubnet2
+      RouteTableId: !Ref PrivateRouteTable2
+    Type: AWS::EC2::SubnetRouteTableAssociation
+
+  PriSubnet3RTAssoc:
+    Properties:
+      SubnetId: !Ref PriSubnet3
+      RouteTableId: !Ref PrivateRouteTable3
+    Type: AWS::EC2::SubnetRouteTableAssociation 
+
+  ELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP/S to the load balancer
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+
+  EKSWorkerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable access to container instances, from the load balancer only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+      - SourceSecurityGroupId: !Ref ELBSecurityGroup
+        FromPort: 0
+        IpProtocol: tcp
+        ToPort: 65535
+
+  EKSENISecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable access to container instances, from the load balancer only
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+      - SourceSecurityGroupId: !Ref ELBSecurityGroup
+        FromPort: 0
+        IpProtocol: tcp
+        ToPort: 65535
+
+  ClusterControlPlaneSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: EKSWorkerSecurityGroup
+    Properties:
+      Description: Allow pods to communicate with the cluster API Server
+      GroupId: !Ref EKSENISecurityGroup
+      SourceSecurityGroupId: !Ref EKSWorkerSecurityGroup
+      IpProtocol: tcp
+      ToPort: 443
+      FromPort: 443
+
+  # IAM roles:
+
+  eksServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - eks.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSServicePolicy
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+  SpotFleetTaggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: spotfleet.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole
+
+  ECSAutoScaleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: application-autoscaling.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceAutoscaleRole
+
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: ecs.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - ec2:AuthorizeSecurityGroupIngress
+              - ec2:Describe*
+              - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
+              - elasticloadbalancing:DeregisterTargets
+              - elasticloadbalancing:Describe*
+              - elasticloadbalancing:RegisterInstancesWithLoadBalancer
+              - elasticloadbalancing:RegisterTargets
+              - application-autoscaling:*
+            Resource: '*'
+
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref EC2Role
+
+  catsContainerTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+
+  catsContainerRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: unicornAccessControl
+      Roles:
+        - !Ref catsContainerTaskRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameters
+            Resource: "*"
+            Condition:
+              StringLike:
+                ssm:resourceTag/Classification:
+                    - Mythical
+
+  CloudWatchEventsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchEventsFullAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
+      Path: /
+  
+  CatsnDogsCloudFormationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - ecs:RegisterTaskDefinition
+                  - ecs:ListClusters
+                  - ecs:DescribeServices
+                  - ecs:DescribeClusters
+                  - ecs:ListTaskDefinitions
+                  - ecs:ListContainerInstances
+                  - ecs:ListServices
+                  - ecs:DescribeTaskDefinition
+                  - ecs:UpdateService
+                  - ecs:ListTaskDefinitionFamilies
+                  - ecs:DeregisterTaskDefinition
+
+  # The CodeBuildServiceRole needs permissions to upload images to ECR as part of the build sequence.  
+
+  CatsnDogsBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+              - Resource: !Sub arn:aws:s3:::${CodeUploadS3Bucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+                  - s3:ListBucket
+                  - s3:GetObject
+              - Resource:
+                  - arn:aws:s3:::catsndogs-assets
+                  - arn:aws:s3:::catsndogs-assets/*
+                Effect: Allow
+                Action:
+                  - s3:*
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+              - Resource:
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/dogs
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cats
+                  - !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/simplehomepage
+                Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:PutImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+
+  CatsnDogsPipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource:
+                  - !Sub arn:aws:s3:::${CodeUploadS3Bucket}/*
+                  - !Sub arn:aws:s3:::${CodeUploadS3Bucket}
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+              - Resource:
+                - arn:aws:s3:::codepipeline*
+                - !Sub arn:aws:s3:::${CodeUploadS3Bucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:GetObject
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  -  cloudformation:CreateStack
+                  -  cloudformation:DeleteStack
+                  -  cloudformation:DescribeStacks
+                  -  cloudformation:UpdateStack
+                  -  cloudformation:CreateChangeSet
+                  -  cloudformation:DeleteChangeSet
+                  -  cloudformation:DescribeChangeSet
+                  -  cloudformation:ExecuteChangeSet
+                  -  cloudformation:SetStackPolicy
+                  -  cloudformation:ValidateTemplate
+                  -  codebuild:BatchGetBuilds
+                  -  codebuild:StartBuild
+              - Resource: !GetAtt CatsnDogsCodeCommitRepo.Arn
+                Effect: Allow
+                Action:
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:UploadArchive
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:CancelUploadArchive
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - ecs:* 
+  
+  # Additional base resources.
+
+  EKSInstanceLaunchTemplate:
+      Type: "AWS::EC2::LaunchTemplate"
+      Properties:
+        LaunchTemplateData:
+          TagSpecifications:
+            - ResourceType: instance
+              Tags:
+              - Key: !Sub "kubernetes.io/cluster/${CatsnDogsEKSCluster}"
+                Value: "owned"
+              - Key: "Name"
+                Value: "EKS-Cluster-Instance"
+          KeyName: !Ref KeyName 
+          SecurityGroupIds: 
+            - !GetAtt EKSWorkerSecurityGroup.GroupId
+          UserData:
+            Fn::Base64: !Sub 
+              - |
+                #!/bin/bash -xe
+                CA_CERTIFICATE_DIRECTORY=/etc/kubernetes/pki
+                CA_CERTIFICATE_FILE_PATH=$CA_CERTIFICATE_DIRECTORY/ca.crt
+                MODEL_DIRECTORY_PATH=~/.aws/eks
+                MODEL_FILE_PATH=$MODEL_DIRECTORY_PATH/eks-2017-11-01.normal.json
+                mkdir -p $CA_CERTIFICATE_DIRECTORY
+                mkdir -p $MODEL_DIRECTORY_PATH
+                curl -o $MODEL_FILE_PATH https://s3-us-west-2.amazonaws.com/amazon-eks/1.10.3/2018-06-05/eks-2017-11-01.normal.json
+                aws configure add-model --service-model file://$MODEL_FILE_PATH --service-name eks
+                aws eks describe-cluster --region=${AWS::Region} --name=${ClusterName} --query 'cluster.{certificateAuthorityData: certificateAuthority.data, endpoint: endpoint}' > /tmp/describe_cluster_result.json
+                cat /tmp/describe_cluster_result.json | grep certificateAuthorityData | awk '{print $2}' | sed 's/[,\"]//g' | base64 -d >  $CA_CERTIFICATE_FILE_PATH
+                MASTER_ENDPOINT=$(cat /tmp/describe_cluster_result.json | grep endpoint | awk '{print $2}' | sed 's/[,\"]//g')
+                INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+                sed -i s,MASTER_ENDPOINT,$MASTER_ENDPOINT,g /var/lib/kubelet/kubeconfig
+                sed -i s,CLUSTER_NAME,${ClusterName},g /var/lib/kubelet/kubeconfig
+                sed -i s,REGION,${AWS::Region},g /etc/systemd/system/kubelet.service
+                sed -i s,MASTER_ENDPOINT,$MASTER_ENDPOINT,g /etc/systemd/system/kubelet.service
+                sed -i s,INTERNAL_IP,$INTERNAL_IP,g /etc/systemd/system/kubelet.service
+                sed -i s,MAX_PODS,30,g /etc/systemd/system/kubelet.service
+                DNS_CLUSTER_IP=10.100.0.10
+                if [[ $INTERNAL_IP == 10.* ]] ; then DNS_CLUSTER_IP=172.20.0.10; fi
+                sed -i s,DNS_CLUSTER_IP,$DNS_CLUSTER_IP,g  /etc/systemd/system/kubelet.service
+                sed -i s,CERTIFICATE_AUTHORITY_FILE,$CA_CERTIFICATE_FILE_PATH,g /var/lib/kubelet/kubeconfig
+                sed -i s,CLIENT_CA_FILE,$CA_CERTIFICATE_FILE_PATH,g  /etc/systemd/system/kubelet.service
+                systemctl daemon-reload
+                systemctl restart kubelet
+              - { ClusterName: !Ref CatsnDogsEKSCluster }
+          IamInstanceProfile:   
+            Arn: !GetAtt EC2InstanceProfile.Arn
+          ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", 32] 
+  
+  CatsnDogsEKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      ResourcesVpcConfig:         
+        SecurityGroupIds:
+          - !GetAtt EKSENISecurityGroup.GroupId
+        SubnetIds:
+          - !Ref PriSubnet1
+          - !Ref PriSubnet2
+          - !Ref PriSubnet3
+      RoleArn: !GetAtt eksServiceRole.Arn
+      Version: " 1.10"
+
+  CatsnDogsCodeCommitRepo:
+    Type: "AWS::CodeCommit::Repository"
+    Properties: 
+      RepositoryDescription: "Dogs application source code"
+      RepositoryName: DogsRepo                
+  
+  catsndogsALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+      - Key: idle_timeout.timeout_seconds
+        Value: 50
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref ELBSecurityGroup
+      Subnets:
+        - !Ref PubSubnet1
+        - !Ref PubSubnet2
+      Tags:
+        - Key: Name
+          Value: catsndogsALB
+
+  CodeUploadS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+
+  EksEcrRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: eks
+      
+Outputs:
+
+  CodeUploadS3Bucket:
+    Description: S3 bucket for storing application artifacts
+    Value: !Ref CodeUploadS3Bucket
+
+  Vpc:
+    Description: VpcId of the ECSVPC for use in later templates
+    Value: !Ref Vpc
+    Export:
+      Name: !Sub ${AWS::StackName}-Vpc
+
+  PrivateSubnet1:
+    Description: SubnetId of the first Private Subnet
+    Value: !Ref PriSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-PriSubnet1
+
+  PrivateSubnet2:
+    Description: SubnetId of the second Private Subnet
+    Value: !Ref PriSubnet2
+    Export:
+      Name: !Sub ${AWS::StackName}-PriSubnet2
+
+  PubSubnet1:
+    Description: SubnetId of the first Public Subnet
+    Value: !Ref PubSubnet1
+    Export:
+      Name: !Sub ${AWS::StackName}-PubSubnet1
+
+  PubSubnet2:
+    Description: SubnetId of the second Public Subnet
+    Value: !Ref PubSubnet2
+    Export:
+      Name: !Sub ${AWS::StackName}-PubSubnet2
+
+  EC2InstanceProfile:
+    Description: EC2 Instance Profile for ECS Container Instances
+    Value: !Ref EC2InstanceProfile
+    Export:
+      Name: !Sub ${AWS::StackName}-EC2InstanceProfile
+
+  LoadBalancerARN:
+    Description: ARN of the Application Load Balancer for cats and dogs
+    Value: !Ref catsndogsALB
+    Export:
+      Name: !Sub ${AWS::StackName}-ALBARN
+
+  LoadBalancerFullName:
+    Description: Application Load Balancer for cats and dogs
+    Value: !GetAtt catsndogsALB.LoadBalancerFullName
+    Export:
+      Name: !Sub ${AWS::StackName}-ALBFullName
+
+  LoadBalancerDNSName:
+    Description: Application Load Balancer for cats and dogs
+    Value: !GetAtt catsndogsALB.DNSName
+    Export:
+      Name: !Sub ${AWS::StackName}-ALBDNSName
+
+  LoadBalancerSecurityGroup:
+    Description: Application Load Balancer Security Group
+    Value: !GetAtt ELBSecurityGroup.GroupId
+    Export:
+      Name: !Sub ${AWS::StackName}-ALBSecurityGroup
+
+  ECSServiceRole:
+    Description: ECS Service IAM Role
+    Value: !Ref ECSServiceRole
+    Export:
+      Name: !Sub ${AWS::StackName}-ECSServiceRole
+      
+  catsndogsRep:
+    Description: HTTPS url for dogs repo.
+    Value: !GetAtt CatsnDogsCodeCommitRepo.CloneUrlHttp
+    Export:
+      Name: !Sub ${AWS::StackName}-CloneUrl
+
+

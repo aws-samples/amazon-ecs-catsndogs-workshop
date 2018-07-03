@@ -1,0 +1,28 @@
+Daemon Set which monitors the local metadata for the termination notification and evicts pods from the instance 
+- daemon Set
+- access host metadata
+- poll every 10 seconds
+- if termination notice hit up the API to make the node as unavailable
+- 
+
+// consider create the cluster in the default CloudFormation template. It's not really that interesting and the interesting stuff really deploying the instances.
+
+// Consider showing how the install and setup kubectl and the heptio authenticator. 
+
+// Showing how to apply the node role to the aws auth config and Explaining why it's there.
+
+// Create Spot Fleet
+- Total Target
+- Optional On-demand Portion
+- Choose VPC
+- Choose Subnets (Private)
+- Spot request fulfilment (Diversivied, set max bid price, IAM fleet tagging role)
+
+/// CloudFormation to create a launch template for the Spot Fleet
+- AMI (EKS AMI)
+- Instance Type
+- Key Pair Name
+- Network Type
+- Security Groups
+- Instance Profile (with permission to EKS) (Policy with EKSWorker, EC2ContainerRegistry, EKSCNIPolicu)
+- Populate User Data

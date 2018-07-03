@@ -1,0 +1,31 @@
+---
+  AWSTemplateFormatVersion: 2010-09-09
+
+  Description: catsndogs.lol workshop lab6. Deploys an IDE.
+  
+  Parameters:
+    LabSetupStackName:
+      Type: String
+      Description: "Name of the catsndogs.lol workshop stack you created in Lab 0 / setup"
+      Default: catsndogssetup
+  
+  Resources:
+      catsndogsIDE:
+        Type: "AWS::Cloud9::EnvironmentEC2"
+        Properties:
+          Repositories: 
+            - PathComponent: /dogs
+              RepositoryUrl: 
+                Fn::ImportValue:
+                  !Sub "${LabSetupStackName}-CloneUrl"
+          Description: "Cloud9 IDE for Cats and Dogs"
+          AutomaticStopTimeMinutes: 60
+          InstanceType: t2.micro
+          Name: !Sub ${AWS::StackName}-cloud9
+          SubnetId: 
+            Fn::ImportValue:
+              !Sub "${LabSetupStackName}-PubSubnet1"
+  Outputs:
+    Cloud9IDE:
+      Value:
+        !Join ["",["https://",!Ref "AWS::Region",".console.aws.amazon.com/cloud9/ide/",!Ref catsndogsIDE,"?region=",!Ref "AWS::Region"]]
