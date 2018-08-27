@@ -92,11 +92,11 @@ In this step, you will create a new AWS CodePipeline pipeline that you will use 
 
     1.	In **Environment variables** add the following:
 
-        1.	**AWS_DEFAULT_REGION:** <your AWS region>
+        1.	**AWS_DEFAULT_REGION:** for example: eu-west-1
 
-        2.	**AWS_ACCOUNT_ID:** <the account ID of your AWS account>
+        2.	**AWS_ACCOUNT_ID:** for example: 12345567891011
 
-        3.	**REPOSITORY_URI:** <URI of your dogs ECR repository> for example: 12345567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs
+        3.	**REPOSITORY_URI:** for example: 12345567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs
 
 **Note:** The URI of your dogs repository is listed in the ECS Console. Click on Repositories, then on the dogs repository.
 
