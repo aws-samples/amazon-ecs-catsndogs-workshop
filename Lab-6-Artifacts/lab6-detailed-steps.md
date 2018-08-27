@@ -144,12 +144,13 @@ The development team at catsndogs.lol would like you to deploy a new revision of
 
 9.	Commit the changes that have just been made t and push them to the remote repository by running the following commands:
 
-    1.	`git add index.html`
+```
+git add index.html
 
-    2.	`git commit -m ‘changing background color’`
+git commit -m ‘changing background color
 
-    3.	`git push`
-
+git push
+```
 10.	Open the AWS management console, and open the **AWS CodePipeline** console at https://console.aws.amazon.com/codepipeline/.
 
 11.	To verify your pipeline ran successfully:
