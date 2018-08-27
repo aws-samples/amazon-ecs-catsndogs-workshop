@@ -146,7 +146,7 @@ The development team at catsndogs.lol would like you to deploy a new revision of
 
     1.	`git add index.html`
 
-    2.	`git command -m ‘changing background color’`
+    2.	`git commit -m ‘changing background color’`
 
     3.	`git push`
 
