@@ -32,6 +32,7 @@ Resources:
       - Key: Role
         Value: ECS Private Subnet Availability Zone 1
     Type: AWS::EC2::Subnet
+    DependsOn: Vpc
 
   PriSubnet2:
     Properties:
@@ -48,6 +49,7 @@ Resources:
       - Key: Role
         Value: ECS Private Subnet Availability Zone 2
     Type: AWS::EC2::Subnet
+    DependsOn: Vpc
 
   PubSubnet1:
     Properties:
@@ -64,6 +66,7 @@ Resources:
       - Key: Role
         Value: ECS Public Subnet Availability Zone 1
     Type: AWS::EC2::Subnet
+    DependsOn: Vpc
 
   PubSubnet2:
     Properties:
@@ -80,6 +83,7 @@ Resources:
       - Key: Role
         Value: ECS Public Subnet Availability Zone 2
     Type: AWS::EC2::Subnet
+    DependsOn: Vpc
 
   InternetGateway:
     Properties:
@@ -91,12 +95,14 @@ Resources:
       - Key: Network
         Value: Public
     Type: AWS::EC2::InternetGateway
+    DependsOn: Vpc
 
   GatewayToInternet:
     Properties:
       VpcId: !Ref Vpc
       InternetGatewayId: !Ref InternetGateway
     Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn: InternetGateway
 
   PublicRouteTable:
     Properties:
@@ -109,6 +115,7 @@ Resources:
       - Key: Network
         Value: Public
     Type: AWS::EC2::RouteTable
+    DependsOn: Vpc
 
   PublicRoute:
     Properties:
@@ -116,18 +123,21 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
     Type: AWS::EC2::Route
+    DependsOn: PublicRouteTable
 
   PubSubnet1RTAssoc:
     Properties:
       SubnetId: !Ref PubSubnet1
       RouteTableId: !Ref PublicRouteTable
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: PublicRoute
 
   PubSubnet2RTAssoc:
     Properties:
       SubnetId: !Ref PubSubnet2
       RouteTableId: !Ref PublicRouteTable
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: PublicRoute
 
   PrivateRouteTable1:
     Properties:
@@ -140,6 +150,7 @@ Resources:
       - Key: Network
         Value: Private
     Type: AWS::EC2::RouteTable
+    DependsOn: Vpc
 
   PrivateRouteTable2:
     Properties:
@@ -152,17 +163,20 @@ Resources:
       - Key: Network
         Value: Private
     Type: AWS::EC2::RouteTable
+    DependsOn: Vpc
 
   NATGateway1EIP:
     Type: AWS::EC2::EIP
     Properties:
-      Domain: Vpc
+      Domain: vpc
+    DependsOn: Vpc
 
   NATGateway1:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt NATGateway1EIP.AllocationId
       SubnetId: !Ref PubSubnet1
+    DependsOn:PubSubnet1
 
   PrivateRoute1:
     Properties:
@@ -170,6 +184,7 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway1
     Type: AWS::EC2::Route
+    DependsOn: PrivateRouteTable1
 
   PrivateRoute2:
     Properties:
@@ -177,18 +192,21 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway1
     Type: AWS::EC2::Route
+    DependsOn: PrivateRouteTable2
 
   PriSubnet1RTAssoc:
     Properties:
       SubnetId: !Ref PriSubnet1
       RouteTableId: !Ref PrivateRouteTable1
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: PrivateRoute1
 
   PriSubnet2RTAssoc:
     Properties:
       SubnetId: !Ref PriSubnet2
       RouteTableId: !Ref PrivateRouteTable2
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: PrivateRoute2
 
   ELBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -200,6 +218,7 @@ Resources:
         FromPort: 80
         ToPort: 80
         CidrIp: 0.0.0.0/0
+    DependsOn: Vpc
 
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -211,6 +230,7 @@ Resources:
         FromPort: 0
         IpProtocol: tcp
         ToPort: 65535
+    DependsOn: Vpc
 
   # IAM roles:
   SpotFleetTaggingRole:
