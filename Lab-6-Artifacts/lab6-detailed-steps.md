@@ -134,15 +134,13 @@ The development team at catsndogs.lol would like you to deploy a new revision of
 
 4.	Expand **Outputs**, locate the **Cloud9IDE** output. Click on the associated link to launch the Cloud9 IDE.
 
-5.	At the command prompt run `cd ~/environment/dogs` to switch to the local clone of the Dogs application repository.
+5.  In the folder list on the left, expand the **dogs** folder and double-click **index.html** to edit it.
 
-6.	Run the command `nano index.html` to edit the index.html file.
+6.	Locate the `background` property, within the ``<style>`` tags, and change the value to another color. For example, ``“background: green;”``
 
-7.	Locate the `background` property, within the ``<style>`` tags, and change the value to another color. For example, ``“background: blue;”``
+7.  Click on the circle in the tab showing **index.html** and click **Save** to save your changes.
 
-8.	Within the nano editor press `ctrl + x` to exit the editor. When prompted type `Y` to confirm that the changes should be saved.
-
-9.	Commit the changes that have just been made t and push them to the remote repository by running the following commands:
+8.	Commit the changes that have just been made t and push them to the remote repository by running the following commands:
 
 ```
 git add index.html
@@ -151,15 +149,15 @@ git commit -m ‘changing background color
 
 git push
 ```
-10.	Open the AWS management console, and open the **AWS CodePipeline** console at https://console.aws.amazon.com/codepipeline/.
+9.	Open the AWS management console, and open the **AWS CodePipeline** console at https://console.aws.amazon.com/codepipeline/.
 
-11.	To verify your pipeline ran successfully:
+10.	To verify your pipeline ran successfully:
 
     1.	From the **All Pipelines** table, click the **CatsnDogsPipeline**, to monitor the progress of your pipeline.
 
     2.	The status of each stage should change from No executions yet to **In progress**, and then **Succeeded** or **Failed**. The pipeline should complete the first run within a few minutes.
 
-12.	Copy the value of the **LoadBalancerDNSName**, created by the **catsndogssetup** CloudFormation stack that was deployed at the start of the workshop, in to you address bar of your web browser.
+11.	Copy the value of the **LoadBalancerDNSName**, created by the **catsndogssetup** CloudFormation stack that was deployed at the start of the workshop, in to you address bar of your web browser.
 
 The Dogs application page should appear with fancy new background color.
 
