@@ -10,11 +10,13 @@ In this step, you will create a new task definition for a deep learning containe
 
 3. Click **Create new Task Definition**.
 
-4. In **Task Definition Name**, enter **mxnet**.
+4. Click **EC2** and then **Next step**.
 
-5. Click **Add Container**.
+5. In **Task Definition Name**, enter **mxnet**.
 
-6. In the **Add container** dialog, under Standard:
+6. Click **Add Container**.
+
+7. In the **Add container** dialog, under Standard:
 
     1. In **Container name**, enter mxnet
 
@@ -26,19 +28,19 @@ In this step, you will create a new task definition for a deep learning containe
 
     4. Click **Add**.
 
-7. In **Constraint**, click **Add constraint**.
+8. In **Constraint**, click **Add constraint**.
 
-8. Set the **Expression** to use an instance type that is currently running in the cluster. For example if one of the instance types was an c4.large, you would enter:
+9. Set the **Expression** to use an instance type that is currently running in the cluster. For example if one of the instance types was an c4.large, you would enter:
 
-`attribute:ecs.instance-type == c4.large`
+    `attribute:ecs.instance-type == c4.large`
 
-To check the instance types running, open the Clusters view in a new tab, click catsndogsECScluster and select the ECS Instances tab. 
+    To check the instance types running, open the Clusters view in a new tab, click catsndogsECScluster and select the ECS Instances tab. 
 
-From the pop-up window, click the cog button,  , and select ecs.instance-type.
+    From the pop-up window, click the cog button,  , and select ecs.instance-type.
 
-Scroll along the list of instances to see the ecs.instance-type value.
+    Scroll along the list of instances to see the ecs.instance-type value.
 
-9. Click **Create**.
+10. Click **Create**.
 
 ## 5.2	Create a new service for MXNet with a custom placement strategy
 
@@ -52,15 +54,17 @@ In this step, you will create a new ECS Service that will ensure two instances o
 
 4. In **Configure service**:
 
-    1. In **Task definition**, choose **mxnet:1**.
+    1. In **Launch Type**, choose **EC2**.
+    
+    2. In **Task definition**, choose the latest revision for **mxnet**.
 
-    2. In **Cluster**, choose **catsndogsECScluster**.
+    3. In **Cluster**, choose **catsndogsECScluster**.
 
-    3. In **Service name**, enter **mxnetservice**.
+    4. In **Service name**, enter **mxnetservice**.
 
-    4. In **Number of tasks**, enter **2**.
+    5. In **Number of tasks**, enter **2**.
 
-    5. Leave **Minimum healthy percent** and **Maximum percent** at their defaults.
+    6. Leave **Minimum healthy percent** and **Maximum percent** at their defaults.
 
 You will now use a custom placement template to force the MXNet tasks to spread across Availability Zones, then across different instance types, and then BinPack based on Memory:
 
@@ -78,7 +82,7 @@ You will now use a custom placement template to force the MXNet tasks to spread 
 
 11. Click **Next step**.
 
-12. In **Network configuration**, for **Load Balancing**, choose **ELB Type** of **None**.
+12. In **Network configuration**, for **Load Balancing**, choose **Load balancer type** of **None**.
 
 13. Click **Next step**.
 
