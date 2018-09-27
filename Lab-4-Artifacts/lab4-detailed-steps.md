@@ -10,25 +10,27 @@ In this task you will create a new Task definition that will run the image asses
 
 3. Click Create new **Task Definition**.
 
-4. In **Task Definition Name** enter **ImageAssessor**.
+4. Click **EC2** and then **Next step**.
 
-5. Under **Container Defintions** click **Add Container**.
+5. In **Task Definition Name** enter **ImageAssessor**.
 
-6. In **Container Name** enter **ImageAssessmentContainer**.
+6. Under **Container Defintions** click **Add Container**.
 
-7. In **Image** enter **205094881157.dkr.ecr.us-west-2.amazonaws.com/image-assessor:latest**.
+7. In **Container Name** enter **ImageAssessmentContainer**.
 
-8. In **Memory Limits (MiB)** enter **128**.
+8. In **Image** enter **205094881157.dkr.ecr.us-west-2.amazonaws.com/image-assessor:latest**.
 
-9. In **Env Variables** you need to enter the URL of the catsndogs load balancer. The ImageAssessor container uses this to send API commands to the cats containers:
+9. In **Memory Limits (MiB)** enter **128**.
+
+10. In **Env Variables** you need to enter the URL of the catsndogs load balancer. You can find this in the CloudFormation console - look at the **catsndogssetup** stack, check the **Outputs** tab for the value **LoadBalancerDNSName**. The ImageAssessor container uses this to send API commands to the cats containers:
 
     1. Key: ALB_URL
     
     2. Value: <URL of the load balancer> for example: http://catsn-catsn-123455678-abcdefgh.us-west-2.elb.amazonaws.com
 
-10.	Click **Add**.
+11.	Click **Add**.
 
-11.	Click **Create**. 
+12.	Click **Create**. 
 
 ## 4.2 Create a scheduled ECS task.
 
@@ -50,7 +52,7 @@ In this task you will create a scheduled ECS task which executes every five minu
 
 5. In Scheduled target:
     
-    1. In **Target idv, enter **catsndogsLab**.
+    1. In **Target id**, enter **catsndogsLab**.
     
     2. For **Task Definition**, from the drop list, choose the **ImageAssessor:1** image.
     
@@ -107,35 +109,37 @@ The ImageAssessor can also reset all of the cats image if the following environm
 
 2. Click the **Tasks** tab and then click **Run new Task**.
 
-3. In **Task Definition** select the most recent revision of the **ImageAssessor** task.
+3: For **Launch type** select **EC2**.
 
-4. In **Cluster** select the **catsndogsECScluster**.
+4. In **Task Definition** select the most recent revision of the **ImageAssessor** task.
 
-5. In **Number of tasks** enter **2**.
+5. In **Cluster** select the **catsndogsECScluster**.
 
-6. Leave **Task Group** blank.
+6. In **Number of tasks** enter **2**.
 
-7. Expand **Advanced Options**.
+7. Leave **Task Group** blank.
 
-8. Under **Container Overrides** expand the **ImageAssessor** container.
+8. Expand **Advanced Options**.
 
-9. In **Environment variable overrides** click the + to add a new environment variable.
+9. Under **Container Overrides** expand the **ImageAssessor** container.
 
-10. In Key enter **RESETPICTURES** and in Value enter **1**.
+10. In **Environment variable overrides** click the + to add a new environment variable.
 
-11. Click **Run Task**.
+11. In Key enter **RESETPICTURES** and in Value enter **1**.
 
-12. In the **Tasks** tab the **ImageAssessor** tasks should move appear with a **Last status** of PENDING. In a few seconds this will change from PENDING to RUNNING.
+12. Click **Run Task**.
 
-13. The tasks will run for 30 seconds and then exit.
+13. In the **Tasks** tab the **ImageAssessor** tasks should move appear with a **Last status** of PENDING. In a few seconds this will change from PENDING to RUNNING.
 
-14. Once they have exited, click **Desired task status: Stopped**.
+14. The tasks will run for 30 seconds and then exit.
 
-15. Find one of the ImageAssessor tasks in the list and click the **Task** identifier.
+15. Once they have exited, click **Desired task status: Stopped**.
 
-16. Under Containers, expand the image-assessor container. You should see the **Exit code0** indicating the container exited successfully.
+16. Find one of the ImageAssessor tasks in the list and click the **Task** identifier.
 
-17. Verify the cats pictures have been reset by querying the cats API. Replace the host in the example below with the URL of your load balancer:
+17. Under Containers, expand the image-assessor container. You should see the **Exit code0** indicating the container exited successfully.
+
+18. Verify the cats pictures have been reset by querying the cats API. Replace the host in the example below with the URL of your load balancer:
 http://catsn-catsn-123455678-abcdefgh.us-west-2.elb.amazonaws.com/cats/api/list-pictures/
 
 # What's Next
