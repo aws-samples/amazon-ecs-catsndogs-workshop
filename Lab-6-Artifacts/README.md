@@ -28,8 +28,8 @@ During the initial start-up of the Cloud9 IDE a number of steps will automatical
 
         1. **AWS_DEFAULT_REGION**: *<your AWS region>* for example `US-EAST-1`
 
-        2. **AWS_ACCOUNT_ID**: *<the account ID of your AWS account>*
-
+        2. **AWS_ACCOUNT_ID**: *<the account ID of your AWS account>* for example: `12345567891011`
+        
         3. **REPOSITORY_URI**: *<URI of your dogs ECR repository>* for example: `1234567891011.dkr.ecr.us-east-1.amazonaws.com/dogs`
 
     3.	Choose Amazon ECS for the Deployment provider, and configured the following values:
