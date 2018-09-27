@@ -92,11 +92,11 @@ In this step, you will create a new AWS CodePipeline pipeline that you will use 
 
     1.	In **Environment variables** add the following:
 
-        1.	**AWS_DEFAULT_REGION:** <your AWS region>
+        1.	**AWS_DEFAULT_REGION:** for example: eu-west-1
 
-        2.	**AWS_ACCOUNT_ID:** <the account ID of your AWS account>
+        2.	**AWS_ACCOUNT_ID:** for example: 12345567891011
 
-        3.	**REPOSITORY_URI:** <URI of your dogs ECR repository> for example: 12345567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs
+        3.	**REPOSITORY_URI:** for example: 12345567891011.dkr.ecr.ap-southeast-2.amazonaws.com/dogs
 
 **Note:** The URI of your dogs repository is listed in the ECS Console. Click on Repositories, then on the dogs repository.
 
@@ -144,12 +144,13 @@ The development team at catsndogs.lol would like you to deploy a new revision of
 
 9.	Commit the changes that have just been made t and push them to the remote repository by running the following commands:
 
-    1.	`git add index.html`
+```
+git add index.html
 
-    2.	`git command -m ‘changing background color’`
+git commit -m ‘changing background color
 
-    3.	`git push`
-
+git push
+```
 10.	Open the AWS management console, and open the **AWS CodePipeline** console at https://console.aws.amazon.com/codepipeline/.
 
 11.	To verify your pipeline ran successfully:
