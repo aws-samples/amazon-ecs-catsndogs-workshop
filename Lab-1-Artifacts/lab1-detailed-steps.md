@@ -24,7 +24,7 @@
     
     4. i3.large
     
-**Note:** You can also pick older generation families such as m3.large..
+**Note:** You can also pick older generation families such as m3.large as long as they support HVM AMIs.
 
 8.	In **Maximum price (per instance/hour)** you can click the **Spot prices** link to view the current spot prices for the instance types and sizes you have selected. More information on how EC2 Spot instance pricing works is available on the Amazon EC2 Spot Instances Pricing page: https://aws.amazon.com/ec2/spot/pricing/
 
