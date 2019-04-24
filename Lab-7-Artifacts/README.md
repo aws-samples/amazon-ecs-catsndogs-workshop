@@ -9,7 +9,7 @@ https://github.com/awslabs/ecs-canary-blue-green-deployment
 
 ### High-level Instructions
 
-1.	Deploy a CloudFormation stack using the `Lab7-create-ecs-green-tasks-and-services.yml` template file. This will create a “green” stack composed of an Application Load Balancer, new ECS tasks and services, and a Route 53 hosted zone. It will also create the AWS Lambada functions, AWS IAM roles and AWS DynamoDB table to support blue/green deployments.
+1.	Deploy a CloudFormation stack using the `Lab7-create-ecs-green-tasks-and-services.yml` template file. This will create a “green” stack composed of an Application Load Balancer, new ECS tasks and services, and a Route 53 hosted zone. It will also create the AWS Lambda functions, AWS IAM roles and AWS DynamoDB table to support blue/green deployments.
 
 2.	In the Route 53 console, find the catsndogs.lol hosted zone. Note the weighted record set for www.catsndogs.lol is set to return one result 100% of the time.
 
