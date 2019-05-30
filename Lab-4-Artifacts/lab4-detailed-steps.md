@@ -32,7 +32,7 @@ In this task you will create a new Task definition that will run the image asses
 
 ## 4.2 Create a scheduled ECS task.
 
-In this task you will create a scheduled ECS task which executes every five minutes:
+In this task you will create a scheduled ECS task which executes every two minutes:
 
 1. In the AWS Console, in the **Compute** section click **ECS**.
 
