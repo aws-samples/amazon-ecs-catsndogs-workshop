@@ -10,7 +10,7 @@ Once the services and Auto Scaling are set up, you will launch a load generator 
 
 2.	Find the load balancer with **catsn-catsn** in the name. Copy the DNS name into your browser and validate that the site works.
 
-3.	In the ECS Console, select the cats service and enable Task Auto Scaling. Set the minimum number of tasks to 2 and the maximum of 100. Select the role with **ECSAutoScaleRole** in it's name.
+3.	In the ECS Console, select the cats service and enable Task Auto Scaling, via the Update button at the top right hand corner. Move through the steps, and set the Service Auto Scaling to "Configure Service Auto Scaling to adjust your service's desired count". Set the minimum number of tasks to 2 and the maximum of 100. Select the role with **ECSAutoScaleRole** in it's name.
 
     a. Create a policy called ScaleUp. Use the alarm with "CatsScaleUp" in the name. Add steps to the scaling policy. The first step should add 10 tasks when the load is between 1000 and 2000. The second should add 20 tasks when the load is between 2000 and 4000. The third should add 25 tasks when the load is over 4000.
 
@@ -26,7 +26,7 @@ Once the services and Auto Scaling are set up, you will launch a load generator 
 
 8.	In the ECS console, check that the ECS services are adding more tasks in response to the load. The Events tab for each service will show information about new task launches.
 
-9.	In CloudWatch, check the ScaleUp alarm which is triggered by the cluster’s MemoryReservation metric. This should move into ALARM state as tasks are added to the ECS services, causing the amount of reserved memory to increase.
+9.	In CloudWatch, check the ScaleOut alarm which is triggered by the cluster’s MemoryReservation metric. This should move into ALARM state as tasks are added to the ECS services, causing the amount of reserved memory to increase.
 
 10.	Once the ScaleUp alarm is triggered, check the Spot fleet Auto Scaling history. Instances should be added to the Spot fleet
 
