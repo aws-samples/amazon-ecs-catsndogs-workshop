@@ -156,7 +156,7 @@ Resources:
   NATGateway1EIP:
     Type: AWS::EC2::EIP
     Properties:
-      Domain: Vpc
+      Domain: vpc
 
   NATGateway1:
     Type: AWS::EC2::NatGateway
