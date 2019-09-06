@@ -10,7 +10,7 @@ At the end of this lab you will have an ECS cluster composed of Spot fleet insta
 
 	a.	The cluster should be named **catsndogsECScluster**. This name is used in later labs, so if you name the cluster something else you will have to remember this when running later commands.
 
-   	b.	Select several instance types from a range of instance types. It is recommended you use smaller instance sizes rather than large ones. For example: m4.large, c4.large, r4.large, i3.large. You may also use previous-generation families.
+   	b.	Select several instance types from a range of instance types. It is recommended you use smaller instance sizes rather than large ones. For example: m5.large, c5.large, m4.large, c4.large, r4.large, i3.large.
 
    	c.	Set a maximum bid price of $0.25.
 

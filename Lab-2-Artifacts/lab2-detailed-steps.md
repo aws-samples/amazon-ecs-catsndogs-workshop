@@ -35,7 +35,7 @@ setup, or named the ECS cluster something other than catsndogsECScluster.
 
 In this task you will set up Task Auto Scaling for the cats and dogs services
 
-1. In the **Compute** section click **EC2 Container Service**.
+1. In the **Compute** section of the AWS Console click **EC2 Container Service**.
 
 2. In the ECS console click **catsndogsECScluster** then the service with Cats in the name.
 
