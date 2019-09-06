@@ -8,7 +8,7 @@ In this task you will create a new Task definition that will run the image asses
 
 2. Click **Task Definitions**.
 
-3. Click Create new **Task Definition**.
+3. Click Create new **Task Definition** and for **Select launch type compatibility** choose **EC2**.
 
 4. Click **EC2** and then **Next step**.
 
@@ -34,7 +34,7 @@ In this task you will create a new Task definition that will run the image asses
 
 ## 4.2 Create a scheduled ECS task.
 
-In this task you will create a scheduled ECS task which executes every five minutes:
+In this task you will create a scheduled ECS task which executes every two minutes:
 
 1. In the AWS Console, in the **Compute** section click **ECS**.
 
@@ -52,7 +52,7 @@ In this task you will create a scheduled ECS task which executes every five minu
 
 5. In Scheduled target:
     
-    1. In **Target id**, enter **catsndogsLab**.
+    1. In **Target id**, enter **catsndogsLab** and set **Launch Type** to **EC2**.
     
     2. For **Task Definition**, from the drop list, choose the **ImageAssessor:1** image.
     

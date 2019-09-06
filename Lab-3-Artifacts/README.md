@@ -5,7 +5,7 @@ In order to accomplish this, the location of the unicorn images will be stored i
 In this lab, you will configure Parameter Store and deploy a new version of the cats task that can access the Parameter Store secure string.
 
 ### High-level Instructions
-1.	In Systems Manager Parameter Store (located in the EC2 console), create a new secure string. Name the secure string **UnicornLocation** and use the default KMS key. Enter a value of **catsndogs-assets.s3.amazonaws.com**
+1.	In Systems Manager Parameter Store (located in the EC2 console), create a new secure string. Name the secure string **UnicornLocation** and use the default KMS key. Enter a value of **catsndogs-assets.s3.amazonaws.com**. Add a tag with the key "Classification" and value "Mythical" (no quotes).
 
 2.	In the ECS Task Definition create a new revision of the cats task:
 
