@@ -123,7 +123,9 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
     Type: AWS::EC2::Route
-    DependsOn: PublicRouteTable
+    DependsOn:
+      - PublicRouteTable
+      - GatewayToInternet
 
   PubSubnet1RTAssoc:
     Properties:
