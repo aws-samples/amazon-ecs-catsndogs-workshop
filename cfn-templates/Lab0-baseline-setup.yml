@@ -176,7 +176,7 @@ Resources:
     Properties:
       AllocationId: !GetAtt NATGateway1EIP.AllocationId
       SubnetId: !Ref PubSubnet1
-    DependsOn:PubSubnet1
+    DependsOn: PubSubnet1
 
   PrivateRoute1:
     Properties:
