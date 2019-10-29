@@ -123,7 +123,9 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
     Type: AWS::EC2::Route
-    DependsOn: PublicRouteTable
+    DependsOn:
+      - PublicRouteTable
+      - GatewayToInternet
 
   PubSubnet1RTAssoc:
     Properties:
@@ -176,7 +178,7 @@ Resources:
     Properties:
       AllocationId: !GetAtt NATGateway1EIP.AllocationId
       SubnetId: !Ref PubSubnet1
-    DependsOn:PubSubnet1
+    DependsOn: PubSubnet1
 
   PrivateRoute1:
     Properties:
